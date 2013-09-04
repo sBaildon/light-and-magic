@@ -66,3 +66,10 @@ E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\BE\GTM.
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHIElectronics.Button.dll
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHIElectronics.Button.pdb
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHIElectronics.Button.xml
+E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\LE\GTM.GHIElectronics.LightSensor.pe
+E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\BE\GTM.GHIElectronics.LightSensor.pe
+E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\LE\GTM.GHIElectronics.LightSensor.pdbx
+E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\BE\GTM.GHIElectronics.LightSensor.pdbx
+E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHIElectronics.LightSensor.dll
+E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHIElectronics.LightSensor.pdb
+E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHIElectronics.LightSensor.xml

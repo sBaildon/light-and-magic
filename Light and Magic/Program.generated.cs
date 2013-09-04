@@ -19,6 +19,8 @@ namespace Light_and_Magic {
         
         private Gadgeteer.Modules.GHIElectronics.Button button;
         
+        private Gadgeteer.Modules.GHIElectronics.LightSensor lightSensor;
+        
         public static void Main() {
             // Important to initialize the Mainboard first
             Program.Mainboard = new GHIElectronics.Gadgeteer.FEZSpider();
@@ -32,6 +34,7 @@ namespace Light_and_Magic {
         private void InitializeModules() {
             this.button = new GTM.GHIElectronics.Button(4);
             this.sdCard = new GTM.GHIElectronics.SDCard(5);
+            this.lightSensor = new GTM.GHIElectronics.LightSensor(9);
         }
     }
 }

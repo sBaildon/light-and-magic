@@ -22,12 +22,12 @@ namespace Light_and_Magic
         
         #region Lights
 
-        public void setLED(bool state)
+        void setLED(bool state)
         {
             Mainboard.SetDebugLED(state);
         }
 
-        public void toggleLED()
+        void toggleLED()
         {
             ledState = !ledState;
             Mainboard.SetDebugLED(ledState);
@@ -37,16 +37,50 @@ namespace Light_and_Magic
 
         #region Buttons
 
-        public void buttonPressed(Button sender, Button.ButtonState state)
+        void buttonPressed(Button sender, Button.ButtonState state)
         {
             toggleLED();
         }
 
         #endregion
 
+        #region Light Sensor
+        
+
+        
+        #endregion
+
+        #region Timer
+
+        void timerTick(GT.Timer timer)
+        {
+            Debug.Print("Sensed... " + lightSensor.ReadLightSensorPercentage().ToString());
+        }
+
+        #endregion
+
+        #region SD Card
+
+        bool verifySDCard()
+        {
+            if (sdCard.IsCardInserted || sdCard.IsCardMounted)
+            {
+                Debug.Print("Found SD Card");
+                return true;
+            }
+            return false;
+        }
+
+        #endregion
         void ProgramStarted()
         {
             button.ButtonPressed += new Button.ButtonEventHandler(buttonPressed);
+
+            GT.Timer timer = new GT.Timer(30000);
+            timer.Tick += new GT.Timer.TickEventHandler(timerTick);
+            timer.Start();
+
+            verifySDCard();
         }
     }
 }
