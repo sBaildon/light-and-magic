@@ -18,17 +18,35 @@ namespace Light_and_Magic
     public partial class Program
     {
 
+        bool ledState = false;
+        
         #region Lights
 
-        public void toggleLED(bool state)
+        public void setLED(bool state)
         {
             Mainboard.SetDebugLED(state);
+        }
+
+        public void toggleLED()
+        {
+            ledState = !ledState;
+            Mainboard.SetDebugLED(ledState);
+        }
+
+        #endregion
+
+        #region Buttons
+
+        public void buttonPressed(Button sender, Button.ButtonState state)
+        {
+            toggleLED();
         }
 
         #endregion
 
         void ProgramStarted()
         {
+            button.ButtonPressed += new Button.ButtonEventHandler(buttonPressed);
         }
     }
 }
