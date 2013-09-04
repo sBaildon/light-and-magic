@@ -18,6 +18,15 @@ namespace Light_and_Magic
     public partial class Program
     {
 
+        #region Lights
+
+        public void toggleLED(bool state)
+        {
+            Mainboard.SetDebugLED(state);
+        }
+
+        #endregion
+
         void ProgramStarted()
         {
         }
