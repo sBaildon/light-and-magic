@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections;
 using System.Threading;
 using Microsoft.SPOT;
@@ -12,23 +13,19 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
-namespace Light_and_Magic
-{
+namespace Light_and_Magic {
 
-    public partial class Program
-    {
+    public partial class Program {
 
         bool ledState = false;
         
         #region Lights
 
-        void setLED(bool state)
-        {
+        void setLED(bool state) {
             Mainboard.SetDebugLED(state);
         }
 
-        void toggleLED()
-        {
+        void toggleLED() {
             ledState = !ledState;
             Mainboard.SetDebugLED(ledState);
         }
@@ -37,8 +34,7 @@ namespace Light_and_Magic
 
         #region Buttons
 
-        void buttonPressed(Button sender, Button.ButtonState state)
-        {
+        void buttonPressed(Button sender, Button.ButtonState state) {
             toggleLED();
         }
 
@@ -52,8 +48,7 @@ namespace Light_and_Magic
 
         #region Timer
 
-        void timerTick(GT.Timer timer)
-        {
+        void timerTick(GT.Timer timer) {
             Debug.Print("Sensed... " + lightSensor.ReadLightSensorPercentage().ToString());
         }
 
@@ -61,26 +56,36 @@ namespace Light_and_Magic
 
         #region SD Card
 
-        bool verifySDCard()
-        {
-            if (sdCard.IsCardInserted || sdCard.IsCardMounted)
-            {
-                Debug.Print("Found SD Card");
+        bool verifySDCard() {
+            if (sdCard.IsCardInserted && sdCard.IsCardMounted) {
+                Debug.Print("SD card verified");
                 return true;
             }
+            if (sdCard.IsCardInserted && !sdCard.IsCardMounted) {
+                Debug.Print("SD card inserted, not mounted\nMounting...");
+                try {
+                    sdCard.MountSDCard();
+                    Debug.Print("Mounted");
+                    return true;
+                }
+                catch {
+                    Debug.Print("Failed to mount");
+                    return false;
+                }
+            }
+            Debug.Print("SD card not found");
             return false;
         }
 
         #endregion
-        void ProgramStarted()
-        {
+
+        void ProgramStarted() {
             button.ButtonPressed += new Button.ButtonEventHandler(buttonPressed);
 
             GT.Timer timer = new GT.Timer(30000);
             timer.Tick += new GT.Timer.TickEventHandler(timerTick);
             timer.Start();
-
-            verifySDCard();
         }
+
     }
 }
