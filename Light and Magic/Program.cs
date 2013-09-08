@@ -67,14 +67,22 @@ namespace Light_and_Magic {
                     sdCard.MountSDCard();
                     Debug.Print("Mounted");
                     return true;
-                }
-                catch {
+                } catch {
                     Debug.Print("Failed to mount");
                     return false;
                 }
             }
             Debug.Print("SD card not found");
             return false;
+        }
+
+        void writeNewFile(string name, string data) {
+            GT.StorageDevice storage;
+            byte[] dataBytes;
+
+            storage = sdCard.GetStorageDevice();
+            dataBytes = System.Text.Encoding.UTF8.GetBytes(data);
+            storage.WriteFile(name + ".csv", dataBytes);
         }
 
         #endregion
