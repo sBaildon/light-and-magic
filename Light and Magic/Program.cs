@@ -17,8 +17,10 @@ namespace Light_and_Magic {
 
     public partial class Program {
 
-        bool ledState = false;
-        
+        bool ledState;
+        bool active;
+        GT.StorageDevice storage;
+
         #region Lights
 
         void setLED(bool state) {
@@ -34,8 +36,18 @@ namespace Light_and_Magic {
 
         #region Buttons
 
+        void toggleState() {
+            active = !active;
+        }
+
         void buttonPressed(Button sender, Button.ButtonState state) {
-            toggleLED();
+            toggleState();
+            if (active) {
+                setLED(true);
+            }
+            else {
+                setLED(false);
+            }
         }
 
         #endregion
@@ -76,13 +88,28 @@ namespace Light_and_Magic {
             return false;
         }
 
-        void writeNewFile(string name, string data) {
-            GT.StorageDevice storage;
+        void writeNewFile(string file, string data) {
             byte[] dataBytes;
 
-            storage = sdCard.GetStorageDevice();
             dataBytes = System.Text.Encoding.UTF8.GetBytes(data);
-            storage.WriteFile(name + ".csv", dataBytes);
+            storage.WriteFile(file + ".csv", dataBytes);
+        }
+
+        #endregion
+
+        #region Program
+
+        void startLogging() {
+            if (!sdCard.IsCardMounted) {
+                sdCard.MountSDCard();
+            }
+            storage = sdCard.GetStorageDevice();
+            writeNewFile("day 500", "gerome, mark, ninja");
+        }
+
+        void finishLogging() {
+            sdCard.UnmountSDCard();
+            storage = null;
         }
 
         #endregion
@@ -90,7 +117,7 @@ namespace Light_and_Magic {
         void ProgramStarted() {
             button.ButtonPressed += new Button.ButtonEventHandler(buttonPressed);
 
-            GT.Timer timer = new GT.Timer(30000);
+            GT.Timer timer = new GT.Timer(5000);
             timer.Tick += new GT.Timer.TickEventHandler(timerTick);
             timer.Start();
         }

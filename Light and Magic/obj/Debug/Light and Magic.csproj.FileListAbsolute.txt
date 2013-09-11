@@ -47,7 +47,6 @@ E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHI
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GHI.Premium.IO.xml
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GHI.Premium.Hardware.xml
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GHI.Premium.System.xml
-E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\obj\Debug\Light and Magic.csprojResolveAssemblyReference.cache
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\obj\Debug\TinyCLR_DebugReferences.cache
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\obj\Debug\Light_and_Magic.Resources.resources
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\obj\Debug\Light and Magic.csproj.GenerateResource.Cache
@@ -73,3 +72,4 @@ E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\BE\GTM.
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHIElectronics.LightSensor.dll
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHIElectronics.LightSensor.pdb
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHIElectronics.LightSensor.xml
+E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\obj\Debug\Light and Magic.csprojResolveAssemblyReference.cache
