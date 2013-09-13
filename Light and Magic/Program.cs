@@ -57,7 +57,9 @@ namespace Light_and_Magic {
 
         #region Light Sensor
         
-
+        string GetLightIntensitiy() {
+            return lightSensor.ReadLightSensorPercentage().ToString());
+        }
         
         #endregion
 
