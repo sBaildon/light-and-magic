@@ -19,7 +19,10 @@ namespace Light_and_Magic {
 
         bool ledState;
         bool active;
+        Stream stream;
+        StreamWriter writer;
         GT.StorageDevice storage;
+
 
         #region Lights
 
@@ -64,6 +67,12 @@ namespace Light_and_Magic {
             Debug.Print("Sensed... " + lightSensor.ReadLightSensorPercentage().ToString());
         }
 
+        void RunOnceTimer(GT.Timer timer) {
+            finishLogging();
+            Debug.Print("unmounted");
+            timer.Stop();
+        }
+
         #endregion
 
         #region SD Card
@@ -88,28 +97,34 @@ namespace Light_and_Magic {
             return false;
         }
 
-        void writeNewFile(string file, string data) {
-            byte[] dataBytes;
-
-            dataBytes = System.Text.Encoding.UTF8.GetBytes(data);
-            storage.WriteFile(file + ".csv", dataBytes);
-        }
-
         #endregion
 
         #region Program
 
+        //I should probably split this up more, put the stream/writer stuff into its own method
         void startLogging() {
-            if (!sdCard.IsCardMounted) {
-                sdCard.MountSDCard();
+            if (verifySDCard()) {
+                active = true;
+                storage = sdCard.GetStorageDevice();
+                stream = storage.Open(GetFileName(), FileMode.Create, FileAccess.Write);
+                writer = new StreamWriter(stream);
+                writer.WriteLine("Time, Percent, Details");
             }
-            storage = sdCard.GetStorageDevice();
-            writeNewFile("day 500", "gerome, mark, ninja");
+            else {
+                Debug.Print("Failed to start");
+                active = false;
+            }
         }
 
         void finishLogging() {
             sdCard.UnmountSDCard();
             storage = null;
+        }
+
+        //just a debug method until I get an RTC working
+        string GetFileName() {
+            Random rand = new Random();
+            return "day" + rand.Next().ToString() + ".csv";
         }
 
         #endregion
@@ -120,6 +135,12 @@ namespace Light_and_Magic {
             GT.Timer timer = new GT.Timer(5000);
             timer.Tick += new GT.Timer.TickEventHandler(timerTick);
             timer.Start();
+
+            GT.Timer runOnce = new GT.Timer(30000);
+            runOnce.Tick += new GT.Timer.TickEventHandler(RunOnceTimer);
+            runOnce.Start();
+
+            startLogging();
         }
 
     }
