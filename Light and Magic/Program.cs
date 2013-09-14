@@ -23,7 +23,6 @@ namespace Light_and_Magic {
         StreamWriter writer;
         GT.StorageDevice storage;
 
-
         #region Lights
 
         void setLED(bool state) {
@@ -44,12 +43,12 @@ namespace Light_and_Magic {
         }
 
         void buttonPressed(Button sender, Button.ButtonState state) {
-            toggleState();
             if (active) {
-                setLED(true);
-            }
-            else {
+                StopLogging();
                 setLED(false);
+            } else {
+                StartLogging();
+                setLED(true);
             }
         }
 
@@ -66,16 +65,20 @@ namespace Light_and_Magic {
         #region Timer
 
         void timerTick(GT.Timer timer) {
-            Debug.Print("Sensed... " + lightSensor.ReadLightSensorPercentage().ToString());
+            string light = GetLightIntensitiy();
+            Debug.Print("Sensed... " + light);
+            if (active) {
+                writer.WriteLine("Text, " + light + ", desc");
+            }
         }
 
         void RunOnceTimer(GT.Timer timer) {
-            finishLogging();
+            StopLogging();
             Debug.Print("unmounted");
             timer.Stop();
         }
 
-        #endregion
+        #endregion           
 
         #region SD Card
 
@@ -104,7 +107,7 @@ namespace Light_and_Magic {
         #region Program
 
         //I should probably split this up more, put the stream/writer stuff into its own method
-        void startLogging() {
+        void StartLogging() {
             if (verifySDCard()) {
                 active = true;
                 storage = sdCard.GetStorageDevice();
@@ -118,15 +121,18 @@ namespace Light_and_Magic {
             }
         }
 
-        void finishLogging() {
+        void StopLogging() {
+            writer.Close();
+            stream.Close();
             sdCard.UnmountSDCard();
             storage = null;
+            active = false;
         }
 
-        //just a debug method until I get an RTC working
+        //just a debug method until I can get an RTC working
         string GetFileName() {
             Random rand = new Random();
-            return "day" + rand.Next().ToString() + ".csv";
+            return "day" + rand.Next(200).ToString() + ".csv";
         }
 
         #endregion
@@ -140,9 +146,9 @@ namespace Light_and_Magic {
 
             GT.Timer runOnce = new GT.Timer(30000);
             runOnce.Tick += new GT.Timer.TickEventHandler(RunOnceTimer);
-            runOnce.Start();
+            //runOnce.Start();
 
-            startLogging();
+            active = false;
         }
 
     }
