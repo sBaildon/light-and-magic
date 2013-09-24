@@ -11,4 +11,4 @@ Built with (so far):
 * SD card module
 
 ## Usage
-Plug in. Press the button. Done.
+Assemble. Plug in. Press the button. Done.
