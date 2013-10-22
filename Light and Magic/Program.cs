@@ -17,21 +17,16 @@ namespace Light_and_Magic {
 
     public partial class Program {
 
-        bool ledState;
         bool active;
         Stream stream;
         StreamWriter writer;
         GT.StorageDevice storage;
+        long mins;
 
         #region Lights
 
         void setLED(bool state) {
             Mainboard.SetDebugLED(state);
-        }
-
-        void toggleLED() {
-            ledState = !ledState;
-            Mainboard.SetDebugLED(ledState);
         }
 
         #endregion
@@ -67,8 +62,10 @@ namespace Light_and_Magic {
         void timerTick(GT.Timer timer) {
             string light = GetLightIntensitiy();
             Debug.Print("Sensed... " + light);
+
             if (active) {
-                writer.WriteLine("Text, " + light + ", desc");
+                writer.WriteLine(mins.ToString() + "," + light + ", desc");
+                mins = mins + 15;
             }
         }
 
@@ -113,7 +110,7 @@ namespace Light_and_Magic {
                 storage = sdCard.GetStorageDevice();
                 stream = storage.Open(GetFileName(), FileMode.Create, FileAccess.Write);
                 writer = new StreamWriter(stream);
-                writer.WriteLine("Time, Percent, Details");
+                writer.WriteLine("Min, Percent, Details");
             }
             else {
                 Debug.Print("Failed to start");
@@ -138,17 +135,18 @@ namespace Light_and_Magic {
         #endregion
 
         void ProgramStarted() {
+            mins = 0;
+            active = false;
+
             button.ButtonPressed += new Button.ButtonEventHandler(buttonPressed);
 
-            GT.Timer timer = new GT.Timer(5000);
+            GT.Timer timer = new GT.Timer(600000);
             timer.Tick += new GT.Timer.TickEventHandler(timerTick);
             timer.Start();
 
             GT.Timer runOnce = new GT.Timer(30000);
             runOnce.Tick += new GT.Timer.TickEventHandler(RunOnceTimer);
             //runOnce.Start();
-
-            active = false;
         }
 
     }

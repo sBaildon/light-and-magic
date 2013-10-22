@@ -73,3 +73,78 @@ E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHI
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHIElectronics.LightSensor.pdb
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\bin\Debug\GTM.GHIElectronics.LightSensor.xml
 E:\Users\Sean\Dropbox\Projects\Light and Magic\Light and Magic\obj\Debug\Light and Magic.csprojResolveAssemblyReference.cache
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\le\Light and Magic.exe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\be\Light and Magic.exe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\le\Light and Magic.pdb
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\be\Light and Magic.pdb
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\Light and Magic.exe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\Light and Magic.pdb
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\le\Light and Magic.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\le\Light and Magic.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\be\Light and Magic.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\be\Light and Magic.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\Gadgeteer.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GHIElectronics.Gadgeteer.FEZSpider.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GTM.GHIElectronics.Button.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GTM.GHIElectronics.LightSensor.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GTM.GHIElectronics.SDCard.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GHI.Premium.IO.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GHI.Premium.Hardware.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GHI.Premium.System.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\Gadgeteer.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GHIElectronics.Gadgeteer.FEZSpider.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GTM.GHIElectronics.Button.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GTM.GHIElectronics.LightSensor.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GTM.GHIElectronics.SDCard.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GHI.Premium.IO.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GHI.Premium.Hardware.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GHI.Premium.System.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\Gadgeteer.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GHIElectronics.Gadgeteer.FEZSpider.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GTM.GHIElectronics.Button.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GTM.GHIElectronics.LightSensor.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GTM.GHIElectronics.SDCard.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GHI.Premium.IO.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GHI.Premium.Hardware.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\LE\GHI.Premium.System.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\Gadgeteer.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GHIElectronics.Gadgeteer.FEZSpider.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GTM.GHIElectronics.Button.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GTM.GHIElectronics.LightSensor.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GTM.GHIElectronics.SDCard.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GHI.Premium.IO.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GHI.Premium.Hardware.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\BE\GHI.Premium.System.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\Gadgeteer.dll
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GHIElectronics.Gadgeteer.FEZSpider.dll
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GTM.GHIElectronics.Button.dll
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GTM.GHIElectronics.LightSensor.dll
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GTM.GHIElectronics.SDCard.dll
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GHI.Premium.IO.dll
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GHI.Premium.Hardware.dll
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GHI.Premium.System.dll
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\Gadgeteer.pdb
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\Gadgeteer.xml
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GHIElectronics.Gadgeteer.FEZSpider.pdb
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GHIElectronics.Gadgeteer.FEZSpider.xml
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GTM.GHIElectronics.Button.pdb
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GTM.GHIElectronics.Button.xml
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GTM.GHIElectronics.LightSensor.pdb
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GTM.GHIElectronics.LightSensor.xml
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GTM.GHIElectronics.SDCard.pdb
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GTM.GHIElectronics.SDCard.xml
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GHI.Premium.IO.xml
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GHI.Premium.Hardware.xml
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\bin\Debug\GHI.Premium.System.xml
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\Light and Magic.csprojResolveAssemblyReference.cache
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\TinyCLR_DebugReferences.cache
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\Light_and_Magic.Resources.resources
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\Light and Magic.csproj.GenerateResource.Cache
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\Light_and_Magic.Resources.tinyresources
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\TinyResGen.cache
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\be\Light and Magic.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\be\Light and Magic.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\le\Light and Magic.pe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\le\Light and Magic.pdbx
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\Light and Magic.exe
+E:\Users\Sean\Dropbox\Projects\light-and-magic\Light and Magic\obj\Debug\Light and Magic.pdb
