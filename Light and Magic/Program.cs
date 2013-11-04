@@ -65,7 +65,7 @@ namespace Light_and_Magic {
 
             if (active) {
                 writer.WriteLine(mins.ToString() + "," + light + ", desc");
-                mins = mins + 15;
+                mins = mins + 10;
             }
         }
 
