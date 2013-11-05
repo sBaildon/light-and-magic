@@ -21,6 +21,7 @@ namespace Light_and_Magic {
         Stream stream;
         StreamWriter writer;
         GT.StorageDevice storage;
+        ColorSense.ColorChannels channel;
         long mins;
 
         #region Lights
@@ -62,9 +63,12 @@ namespace Light_and_Magic {
         void timerTick(GT.Timer timer) {
             string light = GetLightIntensitiy();
             Debug.Print("Sensed... " + light);
-
+            channel = colorSense.ReadColorChannels();
+            Debug.Print("Blue:  " + channel.Blue.ToString() + "\n" +
+                        "Red:   " + channel.Red.ToString() + "\n" +
+                        "Green: " + channel.Green.ToString() + "\n");
             if (active) {
-                writer.WriteLine(mins.ToString() + "," + light + ", desc");
+                writer.WriteLine(mins.ToString() + "," + light + "," + channel.Red.ToString() + "," + channel.Green.ToString() + "," + channel.Blue.ToString());
                 mins = mins + 10;
             }
         }
@@ -110,7 +114,7 @@ namespace Light_and_Magic {
                 storage = sdCard.GetStorageDevice();
                 stream = storage.Open(GetFileName(), FileMode.Create, FileAccess.Write);
                 writer = new StreamWriter(stream);
-                writer.WriteLine("Min, Percent, Details");
+                writer.WriteLine("Min, Percent, Red, Green, Blue");
             }
             else {
                 Debug.Print("Failed to start");
@@ -139,6 +143,7 @@ namespace Light_and_Magic {
             active = false;
 
             button.ButtonPressed += new Button.ButtonEventHandler(buttonPressed);
+
 
             GT.Timer timer = new GT.Timer(600000);
             timer.Tick += new GT.Timer.TickEventHandler(timerTick);
