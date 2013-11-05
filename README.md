@@ -8,6 +8,7 @@ Built with (so far):
 * Fez Spider mainboard
 * Button
 * Light sensor
+* ColorSense
 * SD card module
 
 ## Usage
