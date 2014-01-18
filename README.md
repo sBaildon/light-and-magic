@@ -10,6 +10,7 @@ Built with (so far):
 * Button
 * Light sensor
 * SD card module
+* Display T35
 
 ## Usage
 Assemble. Plug in. Press the button. Done.
