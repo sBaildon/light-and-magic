@@ -15,144 +15,169 @@ using Gadgeteer.Modules.GHIElectronics;
 
 namespace Light_and_Magic {
 
-    public partial class Program {
+	public partial class Program {
 
-        bool active;
-        Stream stream;
-        StreamWriter writer;
-        GT.StorageDevice storage;
-        ColorSense.ColorChannels channel;
-        long mins;
+		bool isRecording;
+		long minutesLogged;
 
-        #region Lights
+		Stream stream;
+		StreamWriter writer;
+		GT.StorageDevice storage;
 
-        void setLED(bool state) {
-            Mainboard.SetDebugLED(state);
-        }
+		#region Lights
 
-        #endregion
+		void setLED(bool state) {
+			Mainboard.SetDebugLED(state);
+		}
 
-        #region Buttons
+		#endregion
 
-        void toggleState() {
-            active = !active;
-        }
+		#region Buttons
 
-        void buttonPressed(Button sender, Button.ButtonState state) {
-            if (active) {
-                StopLogging();
-                setLED(false);
-            } else {
-                StartLogging();
-                setLED(true);
-            }
-        }
+		void buttonPressed(Button sender, Button.ButtonState state) {
+			if (isRecording) {
+				StopRecording();
+			} else {
+				StartRecording();
+			}
+		}
 
-        #endregion
+	        #endregion
 
-        #region Light Sensor
+		#region Camera
+
+		void pictureCaptured(Camera camera, GT.Picture picture) {
+			Debug.Print("Image captured");
+			storage.WriteFile("picture.bmp", picture.PictureData);
+		}
+
+		#endregion
+
+		#region Light Sensor
+
+		string GetLightIntensitiy() {
+			return lightSensor.ReadLightSensorPercentage().ToString();
+		}
         
-        string GetLightIntensitiy() {
-            return lightSensor.ReadLightSensorPercentage().ToString();
-        }
-        
-        #endregion
+		#endregion
 
-        #region Timer
+		#region Timer
 
-        void timerTick(GT.Timer timer) {
-            string light = GetLightIntensitiy();
-            Debug.Print("Sensed... " + light);
-            channel = colorSense.ReadColorChannels();
-            Debug.Print("Blue:  " + channel.Blue.ToString() + "\n" +
-                        "Red:   " + channel.Red.ToString() + "\n" +
-                        "Green: " + channel.Green.ToString() + "\n");
-            if (active) {
-                writer.WriteLine(mins.ToString() + "," + light + "," + channel.Red.ToString() + "," + channel.Green.ToString() + "," + channel.Blue.ToString());
-                mins = mins + 10;
-            }
-        }
+		void timerTick(GT.Timer timer) {
+			ColorSense.ColorChannels channel;
+			string light;
+			uint red, green, blue;
+			double luma;
 
-        void RunOnceTimer(GT.Timer timer) {
-            StopLogging();
-            Debug.Print("unmounted");
-            timer.Stop();
-        }
+			light = GetLightIntensitiy();
+			Debug.Print("Light: " + light);
 
-        #endregion           
+			channel = colorSense.ReadColorChannels();
+			red = channel.Red;
+			green = channel.Green;
+			blue = channel.Blue;
+			luma = ((0.2126 * red) + (0.7152 * green) + (0.0722 * blue));
 
-        #region SD Card
+			Debug.Print("Luma:  " + luma.ToString());
 
-        bool verifySDCard() {
-            if (sdCard.IsCardInserted && sdCard.IsCardMounted) {
-                Debug.Print("SD card verified");
-                return true;
-            }
-            if (sdCard.IsCardInserted && !sdCard.IsCardMounted) {
-                Debug.Print("SD card inserted, not mounted\nMounting...");
-                try {
-                    sdCard.MountSDCard();
-                    Debug.Print("Mounted");
-                    return true;
-                } catch {
-                    Debug.Print("Failed to mount");
-                    return false;
-                }
-            }
-            Debug.Print("SD card not found");
-            return false;
-        }
+			Debug.Print("Red:   " + red.ToString() + "\n" +
+				    "Green: " + green.ToString() + "\n" +
+				    "Blue:  " + blue.ToString() + "\n");
 
-        #endregion
+			if (isRecording) {
+				writer.WriteLine(minutesLogged.ToString() + "," + 
+						light + "," + 
+						luma.ToString() + "," +
+						red.ToString() + "," + 
+						green.ToString() + "," + 
+						blue.ToString());
+				camera.TakePicture();
+				minutesLogged = minutesLogged + 10;
+			}
+		}
 
-        #region Program
+		#endregion           
 
-        //I should probably split this up more, put the stream/writer stuff into its own method
-        void StartLogging() {
-            if (verifySDCard()) {
-                active = true;
-                storage = sdCard.GetStorageDevice();
-                stream = storage.Open(GetFileName(), FileMode.Create, FileAccess.Write);
-                writer = new StreamWriter(stream);
-                writer.WriteLine("Min, Percent, Red, Green, Blue");
-            }
-            else {
-                Debug.Print("Failed to start");
-                active = false;
-            }
-        }
+		#region SD Card
 
-        void StopLogging() {
-            writer.Close();
-            stream.Close();
-            sdCard.UnmountSDCard();
-            storage = null;
-            active = false;
-        }
+		bool verifySDCard() {
+			if (sdCard.IsCardInserted && sdCard.IsCardMounted) {
+				Debug.Print("SD card verified");
+				return true;
+			}
+			if (sdCard.IsCardInserted && !sdCard.IsCardMounted) {
+				Debug.Print("SD card inserted, not mounted\nMounting...");
+				try {
+					sdCard.MountSDCard();
+					Debug.Print("Mounted");
+					return true;
+				} catch {
+					Debug.Print("Failed to mount");
+					return false;
+				}
+			}
 
-        //just a debug method until I can get an RTC working
-        string GetFileName() {
-            Random rand = new Random();
-            return "day" + rand.Next(200).ToString() + ".csv";
-        }
+			Debug.Print("SD card not found");
+			return false;
+		}
 
-        #endregion
+		#endregion
 
-        void ProgramStarted() {
-            mins = 0;
-            active = false;
+		#region Program
 
-            button.ButtonPressed += new Button.ButtonEventHandler(buttonPressed);
+		void StartRecording() {
+			if (verifySDCard()) {
+				storage = sdCard.GetStorageDevice();
+				stream = storage.Open(GetFileName(), FileMode.Create, FileAccess.Write);
+				writer = new StreamWriter(stream);
+				writer.WriteLine("Min, Percent, Luma, Red, Green, Blue");
+				isRecording = true;
+				setLED(true);
+				Debug.Print("Started recording\n");
+			} else {
+				Debug.Print("Failed to start recording");
+			}
+		}
+
+		void StopRecording() {
+			if (verifySDCard()) {
+				writer.Close();
+				stream.Close();
+				sdCard.UnmountSDCard();
+				storage = null;
+				isRecording = false;
+				minutesLogged = 0;
+				setLED(false);
+				Debug.Print("Stopped recording\n");
+			}
+		}
+
+		string GetFileName() {
+			Random rand = new Random();
+			return "day" + rand.Next(200).ToString() + ".csv";
+		}
+
+		#endregion
+
+		void ProgramStarted() {
+			minutesLogged = 0;
+			isRecording = false;
+
+			button.ButtonPressed += new Button.ButtonEventHandler(buttonPressed);
+
+			camera.PictureCaptured += new Camera.PictureCapturedEventHandler(pictureCaptured);
 
 
-            GT.Timer timer = new GT.Timer(600000);
-            timer.Tick += new GT.Timer.TickEventHandler(timerTick);
-            timer.Start();
+			int intervalInSeconds = 5;
+			int intervalInMillis = intervalInSeconds * 1000;
 
-            GT.Timer runOnce = new GT.Timer(30000);
-            runOnce.Tick += new GT.Timer.TickEventHandler(RunOnceTimer);
-            //runOnce.Start();
-        }
+			int intervalInMinutes = 1;
+			//int intervalInMillis = intervalInMinutes * 60000;
 
-    }
+			GT.Timer timer = new GT.Timer(intervalInMillis);
+			timer.Tick += new GT.Timer.TickEventHandler(timerTick);
+			timer.Start();
+		}
+
+	}
 }

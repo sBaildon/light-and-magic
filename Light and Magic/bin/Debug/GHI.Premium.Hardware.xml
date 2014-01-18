@@ -17,10 +17,6 @@
             <strong>Note: </strong> On some systems, once the Watchdog is enabled, it cannot be disabled.<br/>
             <br/>
             </remarks>
-            <example>
-            This example will reset the system if it becomes unresponsive. This is determined when the C# thread that resets the Watchdog time counter is not working anymore.
-            <!-- Failed to insert some or all of included XML --><include file="_exampleWDT.cs" path="code"></include>
-            </example>
         </member>
         <member name="M:GHI.Premium.Hardware.LowLevel.Watchdog.Enable(System.UInt32)">
             <summary>
@@ -85,53 +81,6 @@
             Currently, only 7-bit I2C addresses are supported.<br/>
             Clock rate is currently ignored. Specify 0 for this field. This will make the rate as fast as possible.
             </remarks>
-            <example>
-            The following example uses two I2C devices on the same bus.<br/>
-            <code>
-<![CDATA[
-using System;
-using Microsoft.SPOT;
-using Microsoft.SPOT.Hardware;
-
-using GHI.Premium.Hardware;
-
-namespace Example
-{
-    public class Program
-    {
-        public static void Main()
-        {
-            // Create the bus
-            Cpu.Pin clockPin = Cpu.Pin.GPIO_Pin1; // choose a correct pin here
-            Cpu.Pin dataPin = Cpu.Pin.GPIO_Pin2; // choose a correct pin here
-            SoftwareI2CBus i2cBus = new SoftwareI2CBus(clockPin, dataPin);
-
-            // Our first device has address 0x52
-            SoftwareI2CBus.I2CDevice i2cDevice1 = i2cBus.CreateI2CDevice(0x52, 0);
-
-            // Our second device has address 0x62
-            SoftwareI2CBus.I2CDevice i2cDevice2 = i2cBus.CreateI2CDevice(0x62, 0);
-
-            int numWritten;
-            int numRead;
-
-            // write some data
-            byte [] dataToWrite = new byte[]{0,1,2,3};
-            numWritten = i2cDevice1.Write(dataToWrite, 0, dataToWrite.Length);
-
-            // read some data
-            byte[] dataToRead = new byte[2];
-            numRead = i2cDevice2.Read(dataToRead, 0, dataToRead.Length);
-
-            // write then read data
-            bool allDataProcessed = i2cDevice2.WriteRead(dataToWrite, 0, 2, dataToRead, 0, 2, out numWritten, out numRead);
-        }
-
-    }
-}
-]]>
-</code>
-            </example>
         </member>
         <member name="M:GHI.Premium.Hardware.SoftwareI2CBus.#ctor(Microsoft.SPOT.Hardware.Cpu.Pin,Microsoft.SPOT.Hardware.Cpu.Pin)">
             <summary>
@@ -259,13 +208,6 @@ namespace Example
             <br/>
             The pin can be an <c>InputPort</c> or an <c>InterruptPort</c>. The underlying <c>Port</c> object can be obtained from this class and controlled directly.
             </remarks>
-            <example>
-            Assume the user specifies to capture three timings. The pin states were as follows:<br/>
-            First pin state was high for 456 Microseconds.<br/> 
-            Second pin state was low for 78 Microseconds.<br/> 
-            Third pin state was high for 40 Microseconds.<br/> 
-            The captured timings will be 456, 78 and 40.
-            </example>
         </member>
         <member name="M:GHI.Premium.Hardware.SignalCapture.#ctor(Microsoft.SPOT.Hardware.Cpu.Pin,Microsoft.SPOT.Hardware.Port.ResistorMode)">
             <summary>
@@ -375,135 +317,6 @@ namespace Example
             Hardware filters are not directly supported but can be set using registers (<c>Register</c> class). You can set explicit or group identifiers for each CAN controller. For complete details, please see LPC24xx User Manual.<br/>
             A combination of software and hardware filters can be used.<br/>
             </remarks>
-            <example>
-            The following demonstrates how to use the CAN class.
-            <code>
-<![CDATA[
-using System;
-using System.Threading;
-using Microsoft.SPOT;
-using Microsoft.SPOT.Hardware;
-using GHI.Premium.Hardware;
-
-namespace Example
-{
-    public class Program
-    {
-        // Messages list
-        static CAN.Message[] msgList;
-
-        public static void Main()
-        {
-            // Set the system time. CAN messages will have a time stamp
-            Utility.SetLocalTime(new DateTime(2011, 2, 14, 0, 0, 0));
-
-            int T1, T2, BRP;
-
-            // These numbers were calculated using the calculator on this link:
-            // http://www.kvaser.com/can/protocol/index.htm
-            // We used the very first value from the calculator output
-
-            /////////////////////////////////////////////////////////////////////////////////////////////
-            // Bitrate 250Kbps
-            // CLK = 72 Mhz, with BRP = 12 -> 6Mhz CAN clock
-            // 6Mhz/250Kbps = 24 TQ
-            // T1 = 16 minus 1 for sync = 15
-            // T2 = 8
-            // 15 + 1 + 8 = 24 TQs which is what we need
-            /////////////////////////////////////////////////////////////////////////////////////////////
-            // uncomment to use this bit timing
-            //BRP = 12;
-            //T1 = 15;
-            //T2 = 8;
-
-            /////////////////////////////////////////////////////////////////////////////////////////////
-            // Bitrate 125Kbps
-            // CLK = 72 Mhz, with BRP = 24 -> 3Mhz CAN clock
-            // 3Mhz/125Kbps = 24 TQ
-            // T1 = 16 minus 1 for sync = 15
-            // T2 = 8
-            // 15 + 1 + 8 = 24 TQs which is what we need
-            /////////////////////////////////////////////////////////////////////////////////////////////
-            // uncomment to use this bit timing
-            BRP = 24;
-            T1 = 15;
-            T2 = 8;
-
-            // For 500Kbps you can use BRP=6 and for 1Mbps you can use BRP=3 ...and so on
-
-            // Use channel 1
-            CAN can = new CAN(CAN.Channel.Channel_1, (uint)(((T2 - 1) << 20) | ((T1 - 1) << 16) | ((BRP - 1) << 0)));
-
-            // create a message list of 100 messages
-            msgList = new CAN.Message[100];
-            for (int i = 0; i < msgList.Length; i++)
-                msgList[i] = new CAN.Message();
-
-            /*
-            // example for sending one message
-            // msg ID
-            msgList[0].ArbID = 0x55;
-            msgList[0].Data[0] = 1;
-            msgList[0].Data[1] = 2;
-            msgList[0].Data[2] = 3;
-            msgList[0].Data[3] = 4;
-            msgList[0].Data[4] = 5;
-            msgList[0].Data[5] = 6;
-            msgList[0].Data[6] = 7;
-            msgList[0].Data[7] = 8;
-            // Send the 8 bytes for example
-            msgList[0].DLC = 8;
-            msgList[0].IsEID = false;
-            msgList[0].IsRTR = false;
-            // Send one messages
-            int numberOfMessagesPosted = can.PostMessages(msgList, 0, 1);
-            */
-
-            // subscribe to events
-            can.DataReceivedEvent += new CANDataReceivedEventHandler(can_DataReceivedEvent);
-            can.ErrorReceivedEvent += new CANErrorReceivedEventHandler(can_ErrorReceivedEvent);
-
-            // sleep forever
-            Thread.Sleep(Timeout.Infinite);
-        }
-
-        static void can_DataReceivedEvent(CAN sender, CANDataReceivedEventArgs args)
-        {
-            Debug.Print(">>> can_DataReceivedEvent <<<");
-
-            // read as many messages as possible
-            int count = sender.GetMessages(msgList, 0, msgList.Length);
-            for (int i = 0; i < count; i++)
-            {
-                Debug.Print("MSG: ID = " + msgList[i].ArbID + " at time = " + msgList[i].TimeStamp);
-            }
-        }
-
-        static void can_ErrorReceivedEvent(CAN sender, CANErrorReceivedEventArgs args)
-        {
-            Debug.Print(">>> can_ErrorReceivedEvent <<<");
-
-            switch (args.Error)
-            {
-                case CAN.Error.Overrun:
-                    Debug.Print("Overrun error. Message lost");
-                    break;
-
-                case CAN.Error.RXOver:
-                    Debug.Print("RXOver error. Internal buffer is full. Message lost");
-                    break;
-
-                case CAN.Error.BusOff:
-                    Debug.Print("BusOff error. Reset CAN controller.");
-                    sender.Reset();
-                    break;
-            }
-        }
-    }
-}
-]]>
-</code>
-            </example>
         </member>
         <member name="M:GHI.Premium.Hardware.CAN.SetExplicitFilters(System.UInt32[])">
             <summary>
@@ -736,35 +549,6 @@ namespace Example
             You can set a custom startup logo for your device. This is saved internally and will be used on every reboot.<br/>
             There are restrictions on the size of the logo, see <c>SupportedWidth</c> and <c>SupportedHeight</c>. This class only accepts a Bitmap byte array which can be generated from <c>myBitmap.GetBitmap()</c>.
             </remarks>
-            <example>
-            <code>
-<![CDATA[
-using Microsoft.SPOT;
-using Microsoft.SPOT.Presentation;
-
-using GHI.Premium.Hardware;
-
-namespace Example
-{
-    public class Program
-    {
-        public static void Main()
-        {
-            // get then logo
-            Bitmap logo = Resources.GetBitmap(Resources.BitmapResources.logo);
-
-            // Scale to supported width and height
-            Bitmap scaledLogo = new Bitmap(Configuration.StartUpLogo.SupportedWidth, Configuration.StartUpLogo.SupportedHeight);
-            scaledLogo.StretchImage(0, 0, logo, scaledLogo.Width, scaledLogo.Height, Bitmap.OpacityOpaque);
-
-            // Set the logo. The logo position will be the lower right corner.
-            Configuration.StartUpLogo.Set(scaledLogo.GetBitmap(), SystemMetrics.ScreenWidth - Configuration.StartUpLogo.SupportedWidth, SystemMetrics.ScreenHeight - Configuration.StartUpLogo.SupportedHeight);
-        }
-    }
-}
-]]>
-</code>
-            </example>
         </member>
         <member name="M:GHI.Premium.Hardware.Configuration.StartUpLogo.Set(System.Byte[],System.Int32,System.Int32)">
             <summary>
@@ -811,36 +595,6 @@ namespace Example
             Maximum supported resolution is 800x600.<br/>
             <br/>
             </remarks>
-            <example>
-            This is an example of how to set an LCD configuration.
-            <code>
-<![CDATA[
-Configuration.LCD.Configurations lcdConfig = new Configuration.LCD.Configurations();
-
-lcdConfig.Width = 320;
-lcdConfig.Height = 240;
-
-lcdConfig.OutputEnableIsFixed = true;
-lcdConfig.OutputEnablePolarity = true;
-
-lcdConfig.HorizontalSyncPolarity = false;
-lcdConfig.VerticalSyncPolarity = false;
-lcdConfig.PixelPolarity = true;
-
-lcdConfig.HorizontalSyncPulseWidth = 41;
-lcdConfig.HorizontalBackPorch = 27;
-lcdConfig.HorizontalFrontPorch = 51;
-lcdConfig.VerticalSyncPulseWidth = 10;
-lcdConfig.VerticalBackPorch = 8;
-lcdConfig.VerticalFrontPorch = 16;
-
-lcdConfig.PixelClockRateKHz = 9000;
-
-// Set config
-Configuration.LCD.Set(lcdConfig);
-]]>
-</code>
-            </example>
         </member>
         <member name="M:GHI.Premium.Hardware.Configuration.LCD.SetRotation(GHI.Premium.Hardware.Configuration.LCD.Rotation)">
             <summary>
@@ -1008,14 +762,6 @@ Configuration.LCD.Set(lcdConfig);
             Important Note: When using waking up upon InterruptInputs activity, the desired InterruptPort must be enabled with glitch filter or has OnInterrupt event assigned.<br/>
             <br/>
             </remarks>
-            <example>
-            Hibernate and wake up on InterruptPort activity.<br/>
-            <!-- Failed to insert some or all of included XML --><include file="_examplePower1.cs" path="code"></include>
-            Hibernate and wake up on EINT0 activity.
-            <!-- Failed to insert some or all of included XML --><include file="_examplePower2.cs" path="code"></include>
-            Hibernate and wake up on time alarm signal.
-            <!-- Failed to insert some or all of included XML --><include file="_examplePower3.cs" path="code"></include>
-            </example>
         </member>
         <member name="M:GHI.Premium.Hardware.LowLevel.Power.Hibernate(GHI.Premium.Hardware.LowLevel.Power.WakeUpInterrupt)">
             <summary>
@@ -1081,35 +827,6 @@ Configuration.LCD.Set(lcdConfig);
             <br/>
             Please refer to your platform user manual for details on requirements and hardware connections.<br/>
             </remarks>
-            <example>
-            <code>
-<![CDATA[
-using System;
-using Microsoft.SPOT.Hardware;
-using GHI.Premium.Hardware;
-
-namespace Example
-{
-    public class Program
-    {
-        public static void Main()
-        {
-            // To keep track of time, set it at the beginning of your application from the RTC.
-
-            // If the time was never set before, set it to a certain date and time.
-            bool timeValid = false;
-            if (timeValid == false)  
-                RealTimeClock.SetTime(new DateTime(2010, 03, 01, 12, 0, 0, 0));
-            /////
-            
-            // You have to set NETMF time from RTC
-            Utility.SetLocalTime(RealTimeClock.GetTime());
-        }
-    }
-}
-]]>
-</code>
-            </example>
         </member>
         <member name="M:GHI.Premium.Hardware.RealTimeClock.SetTime(System.DateTime)">
             <summary>
@@ -1223,81 +940,6 @@ namespace Example
             <remarks>
             This is available on any pin. It has a blocking option for fast accurate timings and a non-blocking option that uses interrupts. This doesn't use real hardware signal generation. Therefore, it may not be 100% accurate. Also, there is a limit in how much time the pin can toggle. Values are platform dependent.<br/>
             </remarks>
-            <example>
-            Using signal generation.
-            <code>
-<![CDATA[
-// Let's create a signal which is low for 200 micro seconds, high for 300 micro seconds and then low for 200 micro seconds.
-bool initValue1 = true; // pin is high
-uint[] timings1 = new uint[] { 200, 300, 200 };
-SignalGenerator oc1 = new SignalGenerator(myPin1, initValue1, 10);
-oc1.Set(false, timings1, 0, 3, false);
-
-// Let's create a PWM signal, that is high for 500 micro seconds and low for 300 micro seconds. Note the usage of the bufferRepeating option.
-bool initValue2 = false; // pin is low
-uint[] timings2 = new uint[] { 500, 300 };
-SignalGenerator oc2 = new SignalGenerator(myPin2, initValue2, 2);
-oc1.Set(true, timings2, 0, 2, true);
-]]>
-</code>
-            Creating a UART transmitter.
-            <code>
-<![CDATA[
-// The following will do a software UART, 8N1, 2400 baudrate.
-const int MAX_TIMINGS_BUFFER_SIZE = 10;
-SignalGenerator oc = new SignalGenerator(pin, true, MAX_TIMINGS_BUFFER_SIZE);
-uint[] buffer = new uint[MAX_TIMINGS_BUFFER_SIZE];
-const int BAUD_RATE = 2400;
-const int BIT_TIME_US = 1 * 1000 * 1000 / BAUD_RATE;
-int BYTE_TIME_MS = (int)System.Math.Ceiling((double)BIT_TIME_US * MAX_TIMINGS_BUFFER_SIZE / 1000);
-
-void SendByte(byte b)
-{
-bool currentPinState;
-int currentBufferIndex = 0;
-uint currentStateTiming;
-
-// start bit
-currentPinState = false;
-currentStateTiming = BIT_TIME_US;
-
-// data bits
-for (int i = 0; i < 8; i++)
-{
-bool neededState = (b & (1 << i)) != 0;
-
-if (neededState != currentPinState)
-{
-buffer[currentBufferIndex] = currentStateTiming;
-currentStateTiming = BIT_TIME_US;
-currentPinState = neededState;
-currentBufferIndex++;
-}
-else
-{
-currentStateTiming += BIT_TIME_US;
-}
-}
-
-// stop bit
-if (currentPinState != true)
-{
-buffer[currentBufferIndex] = currentStateTiming;
-currentBufferIndex++;
-}
-
-// Use a non-blocking option ///////////////
-oc.Set(false, buffer, 0, currentBufferIndex, false);
-// wait till data is sent
-Thread.Sleep(BYTE_TIME_MS);
-////////////////////////////
-
-// Note that if the blocking option is used, you can get more accurate timings and faster baudrates. Also, you can disable processor interrupts so data doesn't get corrupted when interrupts occur.
-// oc.SetBlocking(false, buffer, 0, currentBufferIndex, BIT_TIME_US, true);
-}
-]]>
-</code>
-            </example>
         </member>
         <member name="M:GHI.Premium.Hardware.SignalGenerator.Dispose">
             <summary>
