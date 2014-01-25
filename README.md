@@ -9,6 +9,8 @@ Built with (so far):
 * ColourSense
 * SD Card module
 * Display T35
+* Wifi RS21
+* Camera
 
 ## Usage
-Assemble. Plug in. Press the button. Done.
+Assemble. Plug in. Touch screen. Done.
