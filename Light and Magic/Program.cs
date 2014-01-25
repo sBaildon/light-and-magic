@@ -7,22 +7,36 @@ using Microsoft.SPOT.Presentation;
 using Microsoft.SPOT.Presentation.Controls;
 using Microsoft.SPOT.Presentation.Media;
 using Microsoft.SPOT.Touch;
+using Microsoft.SPOT.Net.NetworkInformation;
 
 using Gadgeteer.Networking;
 using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
+using GHINet = GHI.Premium.Net;
+using GHI.Premium.Net;
 
 namespace Light_and_Magic {
 
 	public partial class Program {
 
+		// Book keeping
 		bool isRecording;
 		long minutesLogged;
 
+		// Used for reading/writing to the SD card
 		Stream stream;
 		StreamWriter writer;
 		GT.StorageDevice storage;
+
+		// Values for the display
+		Window window;
+		Canvas canvas;
+		Font baseFont;
+		Text txtMsg;
+
+		// Wifi
+		WiFiRS9110 wifiNetwork;
 
 		#region Lights
 
@@ -31,18 +45,6 @@ namespace Light_and_Magic {
 		}
 
 		#endregion
-
-		#region Buttons
-
-		void buttonPressed(Button sender, Button.ButtonState state) {
-			if (isRecording) {
-				StopRecording();
-			} else {
-				StartRecording();
-			}
-		}
-
-	        #endregion
 
 		#region Camera
 
@@ -70,6 +72,7 @@ namespace Light_and_Magic {
 			double luma;
 
 			light = GetLightIntensitiy();
+			Debug.Print("Mins:  " + minutesLogged);
 			Debug.Print("Light: " + light);
 
 			channel = colorSense.ReadColorChannels();
@@ -85,14 +88,13 @@ namespace Light_and_Magic {
 				    "Blue:  " + blue.ToString() + "\n");
 
 			if (isRecording) {
+				minutesLogged = minutesLogged + 10;
 				writer.WriteLine(minutesLogged.ToString() + "," + 
 						light + "," + 
 						luma.ToString() + "," +
 						red.ToString() + "," + 
 						green.ToString() + "," + 
 						blue.ToString());
-				camera.TakePicture();
-				minutesLogged = minutesLogged + 10;
 			}
 		}
 
@@ -159,20 +161,77 @@ namespace Light_and_Magic {
 
 		#endregion
 
+		#region Display
+
+		void SetupDisplay() {
+			canvas = new Canvas();
+			window = display.WPFWindow;
+			window.Child = canvas;
+			baseFont = Resources.GetFont(Resources.FontResources.NinaB);
+
+			txtMsg = new Text(baseFont, "Ready");
+			canvas.Children.Add(txtMsg);
+		}
+
+		void SendMessageToDisplay(string message) {
+			txtMsg.TextContent = message;
+		}
+
+		#endregion
+
+		#region Wifi
+
+		void InitWifi(string ssid, string passphrase) {
+			if (!wifiNetwork.IsOpen) {
+				wifiNetwork.Open();
+			}
+			wifiNetwork.NetworkInterface.EnableDhcp();
+			NetworkInterfaceExtension.AssignNetworkingStackTo(wifiNetwork);
+
+			wifiNetwork.WirelessConnectivityChanged +=
+				new WiFiRS9110.WirelessConnectivityChangedEventHandler(Interface_WirelessConnectivityChanged);
+			wifiNetwork.NetworkAddressChanged +=
+				new NetworkInterfaceExtension.NetworkAddressChangedEventHandler(Interface_NetworkAddressChanged);
+
+			WiFiNetworkInfo[] ScanResults = wifiNetwork.Scan();
+			foreach (WiFiNetworkInfo info in ScanResults) {
+				Debug.Print("Found WLAN: " + info.SSID);
+				if (info.SSID.ToString().Equals(ssid)) {
+					wifiNetwork.Join(info, passphrase);
+					break;
+				}
+			}
+		}
+
+		void Interface_NetworkAddressChanged(object sender, EventArgs e) {
+			Debug.Print("WiFi address changed to: " + wifiNetwork.NetworkInterface.IPAddress);
+		}
+
+		void Interface_WirelessConnectivityChanged(object sender, WiFiRS9110.WirelessConnectivityEventArgs e) {
+			Debug.Print("WiFi connectivity changed, new SSID: " + e.NetworkInformation.SSID.ToString());
+		}
+
+		#endregion
+
 		void ProgramStarted() {
 			minutesLogged = 0;
 			isRecording = false;
 
-			button.ButtonPressed += new Button.ButtonEventHandler(buttonPressed);
-
-			camera.PictureCaptured += new Camera.PictureCapturedEventHandler(pictureCaptured);
-
-
 			int intervalInSeconds = 5;
-			int intervalInMillis = intervalInSeconds * 1000;
+			int intervalInMinutes = 0;
+			int intervalInMillis = 0;
 
-			int intervalInMinutes = 1;
-			//int intervalInMillis = intervalInMinutes * 60000;
+			if (intervalInSeconds > 0) {
+				intervalInMillis = intervalInSeconds * 1000;
+			} else {
+				intervalInMillis = intervalInMinutes * 60000;
+			}
+
+			//SetupDisplay();
+			//SendMessageToDisplay("Ready");
+
+			//wifiNetwork = wifi.Interface;
+			//InitWifi("WIFI17", "rilasaci");
 
 			GT.Timer timer = new GT.Timer(intervalInMillis);
 			timer.Tick += new GT.Timer.TickEventHandler(timerTick);

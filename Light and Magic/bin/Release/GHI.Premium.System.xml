@@ -163,53 +163,7 @@
             <br/>
             The version used in this class does 32 cycles of XTEA encryption (most common).<br/>
             The data length to be encrypted or decrypted MUST be a multiple of 8. To work around this restriction, pad the data until it is a multiple of 8. Also, an implementation that does not have this limitation and is the same as NETMF's Key_TinyEncryptionAlgorithm is explained in the book “Expert .NET Micro Framework”, Second Edition by Jens Kühner. It includes source example that implements XTEA in addition to cipher block chaining with cipher byte stealing. See chapter 8 source code in the <a href="http://apress.com/book/view/9781590599730">book link</a>.<br/>
-            <br/>
             </remarks>
-            <example>
-            <code>
-<![CDATA[
-using System;
-using System.Text;
-using Microsoft.SPOT;
-
-using GHI.Premium.System;
-
-public class Program
-{
-    public static void Main()
-    {
-        // 16-byte (128-bit) key
-        byte[] XTEAKey = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 ,16};
-
-        XTEA xtea = new XTEA(XTEAKey);
-
-        // The data to encrypt. Must be multiple of 8.
-        string originalString = "FEZ rocks!!";
-
-        // Append spaces to make it multiple of 8
-        if(originalString.Length % 8 != 0)
-            originalString += new string(' ', 8 - originalString.Length % 8);
-
-        // Convert to byte array
-        byte[] originalData = UTF8Encoding.UTF8.GetBytes(originalString);
-
-        // Encrypt the data
-        byte[] encryptedData = new byte[originalData.Length];
-        xtea.Encrypt(originalData, 0, encryptedData, 0, encryptedData.Length);
-
-        // Decrypt the data
-        byte[] decryptedData = new byte[encryptedData.Length];
-        xtea.Decrypt(encryptedData, 0, decryptedData, 0, decryptedData.Length);
-
-        // Print the decrypted data
-        string decryptedString = new string(Encoding.UTF8.GetChars(decryptedData));
-        Debug.Print(originalString);
-        Debug.Print(decryptedString);
-    }
-}
-]]>
-</code>
-            </example>
         </member>
         <member name="M:GHI.Premium.System.XTEA.#ctor(System.Byte[])">
             <summary>
@@ -408,7 +362,13 @@ public class Program
             </remarks>
         </member>
         <member name="F:GHI.Premium.System.NetworkInterface.Built_In_Ethernet">
-            <summary>NetworkInterface.</summary>
+            <summary>Built In Interface.</summary>
+        </member>
+        <member name="F:GHI.Premium.System.NetworkInterface.ENC28j60_Ethernet">
+            <summary>ENC28J60 Interface.</summary>
+        </member>
+        <member name="F:GHI.Premium.System.NetworkInterface.RS910_Wifi">
+            <summary>RS910 Interface.</summary> 
         </member>
         <member name="T:GHI.Premium.System.ApplicationProtectionLevel">
             <summary>
@@ -417,6 +377,26 @@ public class Program
             <remarks>
             To get the Application protect level use.
             </remarks>
+        </member>
+        <member name="F:GHI.Premium.System.ApplicationProtectionLevel.Disable">
+            <summary>
+            Disable protection.
+            </summary>
+        </member>
+        <member name="F:GHI.Premium.System.ApplicationProtectionLevel.Level_1">
+            <summary>
+            Level_1 protection.
+            </summary>
+        </member>
+        <member name="F:GHI.Premium.System.ApplicationProtectionLevel.Level_2">
+            <summary>
+            Level_2 protection.
+            </summary>
+        </member>
+        <member name="F:GHI.Premium.System.ApplicationProtectionLevel.Level_3">
+            <summary>
+            Level_3 protection.
+            </summary>
         </member>
         <member name="T:GHI.Premium.System.Util">
             <summary>
@@ -529,50 +509,6 @@ public class Program
             This method coverts .NET Micro Framework's <c>Bitmap</c> pixels to a BMP file. This file can be stored on a storage device or transferred over a network.<br/>
             First allocate a buffer for the BMP file. Its size must be: imageWidth * imageHeight * 3 + 54. Then pass the buffer along with the Bitmap's pixels to this method. The Bitmap's pixels can be obtained using <c>Bitmap.GetBitmap()</c>.<br/>
             </remarks>
-            <example>
-            The following example creates an image using the <c>Bitmap</c> class. Then it is converted to a BMP file and saved to an SD card.
-            <code>
-<![CDATA[
-using System;
-using System.IO;
-using Microsoft.SPOT.Presentation.Media;
-using Microsoft.SPOT;
-using GHI.Premium.IO;
-using GHI.Premium.System;
-
-public class Program
-{
-    public static void Main()
-    {
-        // init SD card
-        PersistentStorage ps = new PersistentStorage("SD");
-        ps.MountFileSystem();
-        
-        // assume we have some image
-        Bitmap image = new Bitmap(320, 240);
-        image.DrawRectangle(Colors.Blue, 1, 0, 0, 320, 240, 0, 0, Colors.Blue, 0, 0, Colors.Blue, 0, 0, Bitmap.OpacityOpaque);
-        image.DrawLine(Colors.Orange, 1, 0, 0, 320 - 1, 0);
-        image.DrawLine(Colors.Red, 1, 0, 0, 0, 240-1);
-        image.DrawLine(Colors.Yellow, 1, 320-1, 240-1, 0, 240-1);
-        image.DrawLine(Colors.Magenta, 1, 320-1, 240-1, 320 - 1, 0);
-        image.DrawEllipse(Colors.Red, 320/2, 240/2, 50, 50);
-       
-        // allocate buffer
-        byte[] outputFile = new byte[image.Width * image.Height * 3 + 54];
-
-        // convert to BMP file
-        Util.BitmapToBMPFile(image.GetBitmap(), image.Width, image.Height, outputFile);
-
-        // save image
-        File.WriteAllBytes("\\SD\\CreatedBMPFile.bmp", outputFile);
-
-        ps.Dispose();
-    }
-
-}
-]]>
-</code>
-            </example>
             <param name="bitmapBuffer">Pixel data. This is done using <c>Bitmap.GetBitmap()</c>.</param>
             <param name="bitmapWidth">Image width (<c>Bitmap.Width</c>).</param>
             <param name="bitmapHeight">Image height (<c>Bitmap.Height</c>).</param>

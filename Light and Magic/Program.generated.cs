@@ -18,20 +18,20 @@ namespace Light_and_Magic {
         /// <summary>The SDCard module using socket 5 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.SDCard sdCard;
         
-        /// <summary>The Button module using socket 4 of the mainboard.</summary>
-        private Gadgeteer.Modules.GHIElectronics.Button button;
-        
         /// <summary>The LightSensor module using socket 9 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.LightSensor lightSensor;
         
-        /// <summary>The ColorSense module using socket 10 of the mainboard.</summary>
+        /// <summary>The ColorSense module using socket 4 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.ColorSense colorSense;
         
-        /// <summary>The Camera (Premium) module using socket 3 of the mainboard.</summary>
+        /// <summary>The Camera (Premium) module (not connected).</summary>
         private Gadgeteer.Modules.GHIElectronics.Camera camera;
         
-        /// <summary>The Display TE35 module using sockets 14, 13 and 12 of the mainboard.</summary>
+        /// <summary>The Display TE35 module using sockets 14, 13, 12 and 10 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.Display_TE35 display;
+        
+        /// <summary>The WiFi_RS21 (Premium) module using socket 6 of the mainboard.</summary>
+        private Gadgeteer.Modules.GHIElectronics.WiFi_RS21 wifi;
         
         /// <summary>This property provides access to the Mainboard API. This is normally not necessary for an end user program.</summary>
         protected new static GHIElectronics.Gadgeteer.FEZSpider Mainboard {
@@ -56,11 +56,11 @@ namespace Light_and_Magic {
         
         private void InitializeModules() {
             this.sdCard = new GTM.GHIElectronics.SDCard(5);
-            this.button = new GTM.GHIElectronics.Button(4);
             this.lightSensor = new GTM.GHIElectronics.LightSensor(9);
-            this.colorSense = new GTM.GHIElectronics.ColorSense(10);
-            this.camera = new GTM.GHIElectronics.Camera(3);
-            this.display = new GTM.GHIElectronics.Display_TE35(14, 13, 12, Socket.Unused);
+            this.colorSense = new GTM.GHIElectronics.ColorSense(4);
+            Microsoft.SPOT.Debug.Print("The module \'camera\' was not connected in the designer and will be null.");
+            this.display = new GTM.GHIElectronics.Display_TE35(14, 13, 12, 10);
+            this.wifi = new GTM.GHIElectronics.WiFi_RS21(6);
         }
     }
 }

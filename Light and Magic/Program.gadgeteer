@@ -55,23 +55,8 @@
           <moduleHasSocketUses Id="3aca76ef-24c4-4ac8-84cc-105b97088b32">
             <socketUse Id="bc0ca8d8-431c-4601-b49c-2159ea07cc8a" label="F">
               <socket>
-                <socketUseReferencesSocket Id="15cd3307-a0c5-40d6-9268-0be97208c608">
+                <socketUseReferencesSocket Id="34a0d1b0-3905-4b44-8b24-16abbc91abbf">
                   <socketMoniker Id="1c71a0ca-7d6d-466e-aaa8-f098cdec00d3" />
-                </socketUseReferencesSocket>
-              </socket>
-            </socketUse>
-          </moduleHasSocketUses>
-        </socketUses>
-      </module>
-    </gadgeteerModelHasGadgeteerHardware>
-    <gadgeteerModelHasGadgeteerHardware Id="c3cd07c5-c3f3-4345-9ec3-e40bff31325b">
-      <module Id="143b5207-c48a-4b9c-8ce1-7d0fa45f50bc" cachedDefinition="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&#xD;&#xA;&lt;ModuleDefinition xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; Name=&quot;Button&quot; Manufacturer=&quot;GHI Electronics&quot; Description=&quot;A Button module with an embedded LED&quot; Type=&quot;Gadgeteer.Modules.GHIElectronics.Button&quot; HardwareVersion=&quot;1.2&quot; Image=&quot;C:\Program Files (x86)\GHI Electronics\GHI .NET Gadgeteer SDK\Modules\Button\Resources\Image.jpg&quot; BoardWidth=&quot;22&quot; BoardHeight=&quot;22&quot; MinimumGadgeteerCoreVersion=&quot;2.42.500&quot; HelpUrl=&quot;http://www.ghielectronics.com/catalog/product/274&quot; UniqueId=&quot;c241cd69-3f38-453d-bdc4-5679f4265302&quot; InstanceName=&quot;button&quot; ModuleSuppliesPower=&quot;false&quot;&gt;&#xD;&#xA;  &lt;Power&gt;&#xD;&#xA;    &lt;PowerRequirements Voltage=&quot;3.3&quot;&gt;&#xD;&#xA;      &lt;TypicalCurrent&gt;0.01&lt;/TypicalCurrent&gt;&#xD;&#xA;      &lt;MaximumCurrent&gt;0&lt;/MaximumCurrent&gt;&#xD;&#xA;    &lt;/PowerRequirements&gt;&#xD;&#xA;    &lt;PowerRequirements Voltage=&quot;5&quot;&gt;&#xD;&#xA;      &lt;TypicalCurrent&gt;0&lt;/TypicalCurrent&gt;&#xD;&#xA;      &lt;MaximumCurrent&gt;0&lt;/MaximumCurrent&gt;&#xD;&#xA;    &lt;/PowerRequirements&gt;&#xD;&#xA;  &lt;/Power&gt;&#xD;&#xA;  &lt;ProvidedSockets /&gt;&#xD;&#xA;  &lt;Assemblies&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GTM.GHIElectronics.Button&quot; /&gt;&#xD;&#xA;  &lt;/Assemblies&gt;&#xD;&#xA;  &lt;LibrariesProvided /&gt;&#xD;&#xA;  &lt;Sockets&gt;&#xD;&#xA;    &lt;Socket Orientation=&quot;270&quot; Left=&quot;11.18&quot; Top=&quot;11.53&quot; TypesLabel=&quot;XY&quot; ConstructorOrder=&quot;1&quot; Optional=&quot;false&quot;&gt;&#xD;&#xA;      &lt;Types&gt;&#xD;&#xA;        &lt;Type&gt;X&lt;/Type&gt;&#xD;&#xA;        &lt;Type&gt;Y&lt;/Type&gt;&#xD;&#xA;      &lt;/Types&gt;&#xD;&#xA;      &lt;Pins&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;3&lt;/Pin&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;4&lt;/Pin&gt;&#xD;&#xA;      &lt;/Pins&gt;&#xD;&#xA;    &lt;/Socket&gt;&#xD;&#xA;  &lt;/Sockets&gt;&#xD;&#xA;  &lt;ExtraLibrariesRequired /&gt;&#xD;&#xA;&lt;/ModuleDefinition&gt;" name="button" moduleType="Gadgeteer.Modules.GHIElectronics.Button" moduleDefinitionId="c241cd69-3f38-453d-bdc4-5679f4265302">
-        <socketUses>
-          <moduleHasSocketUses Id="16322c3e-e3c7-447c-b161-70b502215c0f">
-            <socketUse Id="234b2da5-89d8-4d6c-89d6-1e121ab7b7cf" label="XY">
-              <socket>
-                <socketUseReferencesSocket Id="d7f5d8a2-9938-4905-b740-d3ee81a3c229">
-                  <socketMoniker Id="ae00116a-2b3f-4537-9c68-cf0f1e44d62d" />
                 </socketUseReferencesSocket>
               </socket>
             </socketUse>
@@ -85,7 +70,7 @@
           <moduleHasSocketUses Id="a618b701-a432-4365-9443-d097896d7029">
             <socketUse Id="38b0c297-f0ad-4a12-8c0b-aa36617c0893" label="A">
               <socket>
-                <socketUseReferencesSocket Id="3a4e6b58-61f4-4fdb-a328-1dcc4d591409">
+                <socketUseReferencesSocket Id="1c2e81d2-42ab-41f3-9847-8fc9237654a7">
                   <socketMoniker Id="bed607ec-a483-4d8b-b8cf-9fa446700c91" />
                 </socketUseReferencesSocket>
               </socket>
@@ -100,8 +85,8 @@
           <moduleHasSocketUses Id="6ea056cf-de21-4566-8afc-86cf7e266615">
             <socketUse Id="8a20faae-d2c3-4d5f-9662-7453af04c454" label="XY">
               <socket>
-                <socketUseReferencesSocket Id="b8ac1cd8-0111-4479-befc-be5f63f3d3a3">
-                  <socketMoniker Id="ac09e289-20ec-4e0e-bd51-f9ce0b02f330" />
+                <socketUseReferencesSocket Id="4dc938fa-4567-467d-a631-dba5c07a791a">
+                  <socketMoniker Id="ae00116a-2b3f-4537-9c68-cf0f1e44d62d" />
                 </socketUseReferencesSocket>
               </socket>
             </socketUse>
@@ -113,13 +98,7 @@
       <module Id="c7bcf32e-b4ed-4415-aaa1-fd1a977a24fd" cachedDefinition="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&#xD;&#xA;&lt;ModuleDefinition xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; Name=&quot;Camera (Premium)&quot; Manufacturer=&quot;GHI Electronics&quot; Description=&quot;A Camera module&quot; Type=&quot;Gadgeteer.Modules.GHIElectronics.Camera&quot; HardwareVersion=&quot;1.0&quot; Image=&quot;C:\Program Files (x86)\GHI Electronics\GHI .NET Gadgeteer SDK\Modules\Camera\Resources\Image.jpg&quot; BoardWidth=&quot;47&quot; BoardHeight=&quot;27&quot; MinimumGadgeteerCoreVersion=&quot;2.42.500&quot; HelpUrl=&quot;http://www.ghielectronics.com/catalog/product/283&quot; UniqueId=&quot;2fa6362b-78ea-418f-b923-99c4108f17e7&quot; InstanceName=&quot;camera&quot; ModuleSuppliesPower=&quot;false&quot;&gt;&#xD;&#xA;  &lt;Power&gt;&#xD;&#xA;    &lt;PowerRequirements Voltage=&quot;3.3&quot;&gt;&#xD;&#xA;      &lt;TypicalCurrent&gt;0&lt;/TypicalCurrent&gt;&#xD;&#xA;      &lt;MaximumCurrent&gt;0&lt;/MaximumCurrent&gt;&#xD;&#xA;    &lt;/PowerRequirements&gt;&#xD;&#xA;    &lt;PowerRequirements Voltage=&quot;5&quot;&gt;&#xD;&#xA;      &lt;TypicalCurrent&gt;0.055&lt;/TypicalCurrent&gt;&#xD;&#xA;      &lt;MaximumCurrent&gt;0.055&lt;/MaximumCurrent&gt;&#xD;&#xA;    &lt;/PowerRequirements&gt;&#xD;&#xA;  &lt;/Power&gt;&#xD;&#xA;  &lt;ProvidedSockets /&gt;&#xD;&#xA;  &lt;Assemblies&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GTM.GHIElectronics.Camera&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GHI.Premium.Hardware&quot; ErrorMessage=&quot;A required library could not be found.&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GHI.Premium.IO&quot; ErrorMessage=&quot;A required library could not be found.&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GHI.Premium.System&quot; ErrorMessage=&quot;A required library could not be found.&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GHI.Premium.USBHost&quot; ErrorMessage=&quot;A required library could not be found.&quot; /&gt;&#xD;&#xA;  &lt;/Assemblies&gt;&#xD;&#xA;  &lt;LibrariesProvided /&gt;&#xD;&#xA;  &lt;Sockets&gt;&#xD;&#xA;    &lt;Socket Orientation=&quot;180&quot; Left=&quot;43.57&quot; Top=&quot;13.32&quot; TypesLabel=&quot;H&quot; ConstructorOrder=&quot;1&quot; Optional=&quot;false&quot;&gt;&#xD;&#xA;      &lt;Types&gt;&#xD;&#xA;        &lt;Type&gt;H&lt;/Type&gt;&#xD;&#xA;      &lt;/Types&gt;&#xD;&#xA;      &lt;Pins&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;3&lt;/Pin&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;4&lt;/Pin&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;5&lt;/Pin&gt;&#xD;&#xA;      &lt;/Pins&gt;&#xD;&#xA;    &lt;/Socket&gt;&#xD;&#xA;  &lt;/Sockets&gt;&#xD;&#xA;  &lt;ExtraLibrariesRequired&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GHI.Premium.Hardware&quot; ErrorMessage=&quot;A required library could not be found.&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GHI.Premium.IO&quot; ErrorMessage=&quot;A required library could not be found.&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GHI.Premium.System&quot; ErrorMessage=&quot;A required library could not be found.&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GHI.Premium.USBHost&quot; ErrorMessage=&quot;A required library could not be found.&quot; /&gt;&#xD;&#xA;  &lt;/ExtraLibrariesRequired&gt;&#xD;&#xA;&lt;/ModuleDefinition&gt;" name="camera" moduleType="Gadgeteer.Modules.GHIElectronics.Camera" moduleDefinitionId="2fa6362b-78ea-418f-b923-99c4108f17e7">
         <socketUses>
           <moduleHasSocketUses Id="6a2f1d46-cdef-4809-9956-f801479b57f0">
-            <socketUse Id="f70d4d0e-b098-49f4-8c09-336a8fad3ae9" label="H">
-              <socket>
-                <socketUseReferencesSocket Id="9cedc468-237f-4368-ba17-ee9b96825384">
-                  <socketMoniker Id="a653066d-273f-4a75-9e5f-020195a7a860" />
-                </socketUseReferencesSocket>
-              </socket>
-            </socketUse>
+            <socketUse Id="f70d4d0e-b098-49f4-8c09-336a8fad3ae9" label="H" />
           </moduleHasSocketUses>
         </socketUses>
       </module>
@@ -130,7 +109,7 @@
           <moduleHasSocketUses Id="dc91b143-b551-4f63-a0ce-f2f1c289aba8">
             <socketUse Id="6a1f7687-41c3-489e-8cc4-5d93c60f16b1" label="R">
               <socket>
-                <socketUseReferencesSocket Id="6598662b-196e-44c3-a31f-138e024dd0da">
+                <socketUseReferencesSocket Id="c679b344-0ba7-43a6-bf5f-5d1bb59bdae9">
                   <socketMoniker Id="978b0fc4-0814-4049-90e3-7fa08e2cac13" />
                 </socketUseReferencesSocket>
               </socket>
@@ -139,7 +118,7 @@
           <moduleHasSocketUses Id="615338a9-2625-478a-8db0-21534d3a6d72">
             <socketUse Id="e2e1c896-5c45-41fc-969e-68193bb401b0" label="G">
               <socket>
-                <socketUseReferencesSocket Id="6b483442-a2be-4acc-986a-1a325a5629da">
+                <socketUseReferencesSocket Id="416a4622-ce55-41fd-8b3a-89a88c4de8c7">
                   <socketMoniker Id="41e58df3-1f6a-499b-a50d-17f1794d7b14" />
                 </socketUseReferencesSocket>
               </socket>
@@ -148,14 +127,35 @@
           <moduleHasSocketUses Id="686cb4cd-1237-4f89-9dc2-722c76546c24">
             <socketUse Id="b48318a4-f56d-41d7-b108-4a7b1f4f93ea" label="B">
               <socket>
-                <socketUseReferencesSocket Id="a85d8676-967f-4730-820f-c5966b2bd9ce">
+                <socketUseReferencesSocket Id="c1580edb-f9bc-414a-a6f3-746862750054">
                   <socketMoniker Id="e94c0a69-e013-4c14-bb51-b25b1e1cb191" />
                 </socketUseReferencesSocket>
               </socket>
             </socketUse>
           </moduleHasSocketUses>
           <moduleHasSocketUses Id="3cd4ec9b-9e39-4f44-900c-99b95f08c84a">
-            <socketUse Id="7656a0b3-1eca-4220-ae60-90226791ec93" label="T" />
+            <socketUse Id="7656a0b3-1eca-4220-ae60-90226791ec93" label="T">
+              <socket>
+                <socketUseReferencesSocket Id="ca150669-4458-4b3f-9666-8a2de90386a6">
+                  <socketMoniker Id="ac09e289-20ec-4e0e-bd51-f9ce0b02f330" />
+                </socketUseReferencesSocket>
+              </socket>
+            </socketUse>
+          </moduleHasSocketUses>
+        </socketUses>
+      </module>
+    </gadgeteerModelHasGadgeteerHardware>
+    <gadgeteerModelHasGadgeteerHardware Id="b2166886-3ac6-4590-8075-016aceeaba54">
+      <module Id="f1fa0b17-bac7-4df1-8a81-d2615711f2ba" cachedDefinition="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&#xD;&#xA;&lt;ModuleDefinition xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; Name=&quot;WiFi_RS21 (Premium)&quot; Manufacturer=&quot;GHI Electronics&quot; Description=&quot;A WiFi_RS21 module&quot; Type=&quot;Gadgeteer.Modules.GHIElectronics.WiFi_RS21&quot; HardwareVersion=&quot;1.0&quot; Image=&quot;C:\Program Files (x86)\GHI Electronics\GHI .NET Gadgeteer SDK\Modules\WiFi_RS21\Resources\Image.jpg&quot; BoardWidth=&quot;44&quot; BoardHeight=&quot;42&quot; MinimumGadgeteerCoreVersion=&quot;2.42.500&quot; HelpUrl=&quot;http://www.ghielectronics.com/catalog/product/282&quot; UniqueId=&quot;ba974123-53b3-4e73-846e-563b3a91df5f&quot; InstanceName=&quot;wifi_RS21&quot; ModuleSuppliesPower=&quot;false&quot;&gt;&#xD;&#xA;  &lt;Power&gt;&#xD;&#xA;    &lt;PowerRequirements Voltage=&quot;3.3&quot;&gt;&#xD;&#xA;      &lt;TypicalCurrent&gt;0.04&lt;/TypicalCurrent&gt;&#xD;&#xA;      &lt;MaximumCurrent&gt;0.09&lt;/MaximumCurrent&gt;&#xD;&#xA;    &lt;/PowerRequirements&gt;&#xD;&#xA;    &lt;PowerRequirements Voltage=&quot;5&quot;&gt;&#xD;&#xA;      &lt;TypicalCurrent&gt;0&lt;/TypicalCurrent&gt;&#xD;&#xA;      &lt;MaximumCurrent&gt;0&lt;/MaximumCurrent&gt;&#xD;&#xA;    &lt;/PowerRequirements&gt;&#xD;&#xA;  &lt;/Power&gt;&#xD;&#xA;  &lt;ProvidedSockets /&gt;&#xD;&#xA;  &lt;Assemblies&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GTM.GHIElectronics.WiFi_RS21&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GHI.Premium.Net&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;Gadgeteer.WebClient&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;Gadgeteer.WebServer&quot; /&gt;&#xD;&#xA;  &lt;/Assemblies&gt;&#xD;&#xA;  &lt;LibrariesProvided /&gt;&#xD;&#xA;  &lt;Sockets&gt;&#xD;&#xA;    &lt;Socket Orientation=&quot;180&quot; Left=&quot;39.75&quot; Top=&quot;20.62&quot; TypesLabel=&quot;S&quot; ConstructorOrder=&quot;1&quot; Optional=&quot;false&quot;&gt;&#xD;&#xA;      &lt;Types&gt;&#xD;&#xA;        &lt;Type&gt;S&lt;/Type&gt;&#xD;&#xA;      &lt;/Types&gt;&#xD;&#xA;      &lt;Pins&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;3&lt;/Pin&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;4&lt;/Pin&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;5&lt;/Pin&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;6&lt;/Pin&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;true&quot;&gt;7&lt;/Pin&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;true&quot;&gt;8&lt;/Pin&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;true&quot;&gt;9&lt;/Pin&gt;&#xD;&#xA;      &lt;/Pins&gt;&#xD;&#xA;    &lt;/Socket&gt;&#xD;&#xA;  &lt;/Sockets&gt;&#xD;&#xA;  &lt;ExtraLibrariesRequired&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GHI.Premium.Net&quot; ErrorMessage=&quot;A required library could not be found.&quot; /&gt;&#xD;&#xA;  &lt;/ExtraLibrariesRequired&gt;&#xD;&#xA;&lt;/ModuleDefinition&gt;" name="wifi" moduleType="Gadgeteer.Modules.GHIElectronics.WiFi_RS21" moduleDefinitionId="ba974123-53b3-4e73-846e-563b3a91df5f">
+        <socketUses>
+          <moduleHasSocketUses Id="d904fddc-1eb6-44e3-bff2-030755d45d24">
+            <socketUse Id="f35dce6d-261b-494c-a915-fd1bc06b4ab7" label="S">
+              <socket>
+                <socketUseReferencesSocket Id="f68b135f-dc2e-45bf-8211-782fe85973fa">
+                  <socketMoniker Id="d68608cb-bf2c-4ff6-a9ab-04e6b62596da" />
+                </socketUseReferencesSocket>
+              </socket>
+            </socketUse>
           </moduleHasSocketUses>
         </socketUses>
       </module>
