@@ -20,6 +20,11 @@ namespace Light_and_Magic {
 
 	public partial class Program {
 
+		// Modules
+		SDCard sdCard;
+		Display display;
+		WiFi wifi;
+
 		// Book keeping
 		bool isRecording;
 		long minutesLogged;
@@ -29,28 +34,12 @@ namespace Light_and_Magic {
 		StreamWriter writer;
 		GT.StorageDevice storage;
 
-		// Values for the display
 		Window window;
-		Canvas canvas;
-		Font baseFont;
-		Text txtMsg;
-
-		// Wifi
-		WiFiRS9110 wifiNetwork;
 
 		#region Lights
 
 		void setLED(bool state) {
 			Mainboard.SetDebugLED(state);
-		}
-
-		#endregion
-
-		#region Camera
-
-		void pictureCaptured(Camera camera, GT.Picture picture) {
-			Debug.Print("Image captured");
-			storage.WriteFile("picture.bmp", picture.PictureData);
 		}
 
 		#endregion
@@ -100,56 +89,33 @@ namespace Light_and_Magic {
 
 		#endregion           
 
-		#region SD Card
-
-		bool verifySDCard() {
-			if (sdCard.IsCardInserted && sdCard.IsCardMounted) {
-				Debug.Print("SD card verified");
-				return true;
-			}
-			if (sdCard.IsCardInserted && !sdCard.IsCardMounted) {
-				Debug.Print("SD card inserted, not mounted\nMounting...");
-				try {
-					sdCard.MountSDCard();
-					Debug.Print("Mounted");
-					return true;
-				} catch {
-					Debug.Print("Failed to mount");
-					return false;
-				}
-			}
-
-			Debug.Print("SD card not found");
-			return false;
-		}
-
-		#endregion
-
 		#region Program
 
-		void StartRecording() {
-			if (verifySDCard()) {
-				storage = sdCard.GetStorageDevice();
+		public void StartRecording() {
+			if (sdCard.verifySDCard().GetResponse()) {
+				storage = sdCardModule.GetStorageDevice();
 				stream = storage.Open(GetFileName(), FileMode.Create, FileAccess.Write);
 				writer = new StreamWriter(stream);
 				writer.WriteLine("Min, Percent, Luma, Red, Green, Blue");
 				isRecording = true;
 				setLED(true);
-				Debug.Print("Started recording\n");
+				Display.SendMessage("Recording");
+				Debug.Print("Recording\n");
 			} else {
 				Debug.Print("Failed to start recording");
 			}
 		}
 
-		void StopRecording() {
-			if (verifySDCard()) {
+		public void StopRecording() {
+			if (sdCard.verifySDCard().GetResponse()) {
 				writer.Close();
 				stream.Close();
-				sdCard.UnmountSDCard();
+				sdCardModule.UnmountSDCard();
 				storage = null;
 				isRecording = false;
 				minutesLogged = 0;
 				setLED(false);
+				Display.SendMessage("Not recording");
 				Debug.Print("Stopped recording\n");
 			}
 		}
@@ -161,59 +127,28 @@ namespace Light_and_Magic {
 
 		#endregion
 
-		#region Display
+		#region Touch
 
-		void SetupDisplay() {
-			canvas = new Canvas();
-			window = display.WPFWindow;
-			window.Child = canvas;
-			baseFont = Resources.GetFont(Resources.FontResources.NinaB);
-
-			txtMsg = new Text(baseFont, "Ready");
-			canvas.Children.Add(txtMsg);
+		void InitTouch() {
+			window = display.GetWindow();
+			window.TouchUp += new Microsoft.SPOT.Input.TouchEventHandler(TouchUp);
 		}
 
-		void SendMessageToDisplay(string message) {
-			txtMsg.TextContent = message;
-		}
-
-		#endregion
-
-		#region Wifi
-
-		void InitWifi(string ssid, string passphrase) {
-			if (!wifiNetwork.IsOpen) {
-				wifiNetwork.Open();
+		public void TouchUp(object sender, Microsoft.SPOT.Input.TouchEventArgs e) {
+			if (isRecording) {
+				StopRecording();
+			} else {
+				StartRecording();
 			}
-			wifiNetwork.NetworkInterface.EnableDhcp();
-			NetworkInterfaceExtension.AssignNetworkingStackTo(wifiNetwork);
-
-			wifiNetwork.WirelessConnectivityChanged +=
-				new WiFiRS9110.WirelessConnectivityChangedEventHandler(Interface_WirelessConnectivityChanged);
-			wifiNetwork.NetworkAddressChanged +=
-				new NetworkInterfaceExtension.NetworkAddressChangedEventHandler(Interface_NetworkAddressChanged);
-
-			WiFiNetworkInfo[] ScanResults = wifiNetwork.Scan();
-			foreach (WiFiNetworkInfo info in ScanResults) {
-				Debug.Print("Found WLAN: " + info.SSID);
-				if (info.SSID.ToString().Equals(ssid)) {
-					wifiNetwork.Join(info, passphrase);
-					break;
-				}
-			}
-		}
-
-		void Interface_NetworkAddressChanged(object sender, EventArgs e) {
-			Debug.Print("WiFi address changed to: " + wifiNetwork.NetworkInterface.IPAddress);
-		}
-
-		void Interface_WirelessConnectivityChanged(object sender, WiFiRS9110.WirelessConnectivityEventArgs e) {
-			Debug.Print("WiFi connectivity changed, new SSID: " + e.NetworkInformation.SSID.ToString());
 		}
 
 		#endregion
 
 		void ProgramStarted() {
+			sdCard = new SDCard(sdCardModule);
+			display = new Display(displayModule);
+			wifi = new WiFi(wifiModule);
+
 			minutesLogged = 0;
 			isRecording = false;
 
@@ -227,11 +162,9 @@ namespace Light_and_Magic {
 				intervalInMillis = intervalInMinutes * 60000;
 			}
 
-			//SetupDisplay();
-			//SendMessageToDisplay("Ready");
-
-			//wifiNetwork = wifi.Interface;
-			//InitWifi("WIFI17", "rilasaci");
+			display.Init();
+			InitTouch();
+			wifi.Init("WIFI17", "rilasaci");
 
 			GT.Timer timer = new GT.Timer(intervalInMillis);
 			timer.Tick += new GT.Timer.TickEventHandler(timerTick);
