@@ -34,6 +34,7 @@ namespace Light_and_Magic {
 		StreamWriter writer;
 		GT.StorageDevice storage;
 
+		// Touch screen
 		Window window;
 
 		#region Lights

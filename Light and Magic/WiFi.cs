@@ -18,13 +18,11 @@ using GHI.Premium.Net;
 namespace Light_and_Magic {
 	class WiFi {
 		WiFiRS9110 wifi;
+
 		HttpRequest request;
-		readonly string SERVER = "http://www.ghielectronics.com";
 
-
-		public void TouchUp(object sender, Microsoft.SPOT.Input.TouchEventArgs e) {
-
-		}
+		static readonly string SERVER = "http://api.xively.com/v2/feeds/34780663";
+		static readonly string API_KEY = "wSmQSHQrdvq9l9UKD1ICEcfHsVjKJiIuOuk77NVvHIbVJSxA";
 
 		public WiFi(WiFi_RS21 wifiInput) {
 			wifi = wifiInput.Interface;
@@ -47,15 +45,18 @@ namespace Light_and_Magic {
 				Debug.Print("Found WLAN: " + info.SSID);
 				if (info.SSID.ToString().Equals(ssid)) {
 					wifi.Join(info, passphrase);
-					HttpRequest wc = WebClient.GetFromWeb(SERVER);
-					wc.ResponseReceived += new HttpRequest.ResponseHandler(wc_ResponseReceived);
+					PUTContent content = PUTContent.CreateTextBasedContent("{ \"version\":\"1.0.0\", \"datastreams\" : [ { \"id\":\"Intensity\", \"current_value\":\"120\" }] }");
+					request = HttpHelper.CreateHttpPutRequest(SERVER + ".json", content, "application/json");
+					request.AddHeaderField("X-ApiKey", API_KEY);
+					request.ResponseReceived += new HttpRequest.ResponseHandler(ResponseReceived);
+					request.SendRequest();
 					break;
 				}
 			}
 		}
 
-		void wc_ResponseReceived(HttpRequest sender, HttpResponse response) {
-			Display.SendMessage(response.Text);
+		void ResponseReceived(HttpRequest sender, HttpResponse response) {
+			Display.SendMessage(response.StatusCode);
 		}
 
 		private void Interface_NetworkAddressChanged(object sender, EventArgs e) {
@@ -65,5 +66,11 @@ namespace Light_and_Magic {
 		private void Interface_WirelessConnectivityChanged(object sender, WiFiRS9110.WirelessConnectivityEventArgs e) {
 			Debug.Print("WiFi connectivity changed, new SSID: " + e.NetworkInformation.SSID.ToString());
 		}
+
+		public static void SendData() {
+
+		}
+
+		
 	}
 }
