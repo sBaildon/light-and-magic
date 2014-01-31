@@ -77,6 +77,8 @@ namespace Light_and_Magic {
 				    "Green: " + green.ToString() + "\n" +
 				    "Blue:  " + blue.ToString() + "\n");
 
+			WiFi.SendData(red.ToString(), green.ToString(), blue.ToString(), light, luma.ToString());
+
 			if (isRecording) {
 				minutesLogged = minutesLogged + 10;
 				writer.WriteLine(minutesLogged.ToString() + "," + 
@@ -153,7 +155,7 @@ namespace Light_and_Magic {
 			minutesLogged = 0;
 			isRecording = false;
 
-			int intervalInSeconds = 5;
+			int intervalInSeconds = 20;
 			int intervalInMinutes = 0;
 			int intervalInMillis = 0;
 

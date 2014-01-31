@@ -45,17 +45,24 @@ namespace Light_and_Magic {
 				Debug.Print("Found WLAN: " + info.SSID);
 				if (info.SSID.ToString().Equals(ssid)) {
 					wifi.Join(info, passphrase);
-					PUTContent content = PUTContent.CreateTextBasedContent("{ \"version\":\"1.0.0\", \"datastreams\" : [ { \"id\":\"Intensity\", \"current_value\":\"120\" }] }");
-					request = HttpHelper.CreateHttpPutRequest(SERVER + ".json", content, "application/json");
-					request.AddHeaderField("X-ApiKey", API_KEY);
-					request.ResponseReceived += new HttpRequest.ResponseHandler(ResponseReceived);
-					request.SendRequest();
+
 					break;
 				}
 			}
 		}
 
-		void ResponseReceived(HttpRequest sender, HttpResponse response) {
+		public static void SendData(string redval, string greenval, string blueval, string intval, string lumval) {
+			HttpRequest request;
+			PUTContent content;
+
+			content = PUTContent.CreateTextBasedContent(JSON.JSONEncode(redval, greenval, blueval, intval, lumval));
+			request = HttpHelper.CreateHttpPutRequest(SERVER + ".json", content, "application/json");
+			request.AddHeaderField("X-ApiKey", API_KEY);
+			request.ResponseReceived += new HttpRequest.ResponseHandler(ResponseReceived);
+			request.SendRequest();
+		}
+
+		static void ResponseReceived(HttpRequest sender, HttpResponse response) {
 			Display.SendMessage(response.StatusCode);
 		}
 
@@ -66,11 +73,5 @@ namespace Light_and_Magic {
 		private void Interface_WirelessConnectivityChanged(object sender, WiFiRS9110.WirelessConnectivityEventArgs e) {
 			Debug.Print("WiFi connectivity changed, new SSID: " + e.NetworkInformation.SSID.ToString());
 		}
-
-		public static void SendData() {
-
-		}
-
-		
 	}
 }
