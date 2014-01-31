@@ -14,3 +14,7 @@ Built with (so far):
 
 ## Usage
 Assemble. Plug in. Touch screen. Done.
+
+## Xively
+
+Light and Magic communicates with Xively to enable itself in the Internet of Things network. The data feed can be found [here](https://xively.com/develop/f20rKr_j8v1rZmO-mMFp).
