@@ -4,7 +4,6 @@ This project aims to provide a plug n' play black box built on the .NET Micro Fr
 
 Built with (so far):
 * Fez Spider mainboard
-* Button
 * LightSense
 * ColourSense
 * SD Card module
