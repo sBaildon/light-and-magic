@@ -19,8 +19,6 @@ namespace Light_and_Magic {
 	class WiFi {
 		WiFiRS9110 wifi;
 
-		HttpRequest request;
-
 		static readonly string SERVER = "http://api.xively.com/v2/feeds/34780663";
 		static readonly string API_KEY = "wSmQSHQrdvq9l9UKD1ICEcfHsVjKJiIuOuk77NVvHIbVJSxA";
 
@@ -32,6 +30,7 @@ namespace Light_and_Magic {
 			if (!wifi.IsOpen) {
 				wifi.Open();
 			}
+
 			wifi.NetworkInterface.EnableDhcp();
 			NetworkInterfaceExtension.AssignNetworkingStackTo(wifi);
 
@@ -45,13 +44,16 @@ namespace Light_and_Magic {
 				Debug.Print("Found WLAN: " + info.SSID);
 				if (info.SSID.ToString().Equals(ssid)) {
 					wifi.Join(info, passphrase);
-
 					break;
 				}
 			}
 		}
 
-		public static void SendData(string redval, string greenval, string blueval, string intval, string lumval) {
+		public Boolean IsConnected() {
+			return wifi.IsLinkConnected;
+		}
+
+		public void SendData(string redval, string greenval, string blueval, string intval, string lumval) {
 			HttpRequest request;
 			PUTContent content;
 
@@ -62,7 +64,7 @@ namespace Light_and_Magic {
 			request.SendRequest();
 		}
 
-		static void ResponseReceived(HttpRequest sender, HttpResponse response) {
+		private void ResponseReceived(HttpRequest sender, HttpResponse response) {
 			Display.SendMessage(response.StatusCode);
 		}
 

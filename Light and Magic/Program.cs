@@ -45,21 +45,25 @@ namespace Light_and_Magic {
 
 		#endregion
 
-		#region Light Sensor
+		#region Sensor's
 
 		string GetLightIntensitiy() {
 			return lightSensor.ReadLightSensorPercentage().ToString();
+		}
+
+		string CalculateLuminance(uint red, uint green, uint blue) {
+			return (((0.2126 * red) + (0.7152 * green) + (0.0722 * blue))).ToString();
 		}
         
 		#endregion
 
 		#region Timer
 
-		void timerTick(GT.Timer timer) {
+		private void timerTick(GT.Timer timer) {
 			ColorSense.ColorChannels channel;
 			string light;
+			string luminance;
 			uint red, green, blue;
-			double luma;
 
 			light = GetLightIntensitiy();
 			Debug.Print("Mins:  " + minutesLogged);
@@ -69,32 +73,38 @@ namespace Light_and_Magic {
 			red = channel.Red;
 			green = channel.Green;
 			blue = channel.Blue;
-			luma = ((0.2126 * red) + (0.7152 * green) + (0.0722 * blue));
+			luminance = CalculateLuminance(red, green, blue);
 
-			Debug.Print("Luma:  " + luma.ToString());
+			Debug.Print("Luma:  " + luminance);
 
 			Debug.Print("Red:   " + red.ToString() + "\n" +
 				    "Green: " + green.ToString() + "\n" +
 				    "Blue:  " + blue.ToString() + "\n");
 
-			WiFi.SendData(red.ToString(), green.ToString(), blue.ToString(), light, luma.ToString());
+			if (wifi.IsConnected()) {
+				wifi.SendData(red.ToString(), green.ToString(), blue.ToString(), light, luminance);
+			}
 
 			if (isRecording) {
 				minutesLogged = minutesLogged + 10;
 				writer.WriteLine(minutesLogged.ToString() + "," + 
 						light + "," + 
-						luma.ToString() + "," +
+						luminance + "," +
 						red.ToString() + "," + 
 						green.ToString() + "," + 
 						blue.ToString());
 			}
 		}
 
+		private void setupWifi(GT.Timer timer) {
+			wifi.Init("Ysera", "myhotspot");
+		}
+
 		#endregion           
 
 		#region Program
 
-		public void StartRecording() {
+		private void StartRecording() {
 			if (sdCard.verifySDCard().GetResponse()) {
 				storage = sdCardModule.GetStorageDevice();
 				stream = storage.Open(GetFileName(), FileMode.Create, FileAccess.Write);
@@ -109,7 +119,7 @@ namespace Light_and_Magic {
 			}
 		}
 
-		public void StopRecording() {
+		private void StopRecording() {
 			if (sdCard.verifySDCard().GetResponse()) {
 				writer.Close();
 				stream.Close();
@@ -123,7 +133,7 @@ namespace Light_and_Magic {
 			}
 		}
 
-		string GetFileName() {
+		private string GetFileName() {
 			Random rand = new Random();
 			return "day" + rand.Next(200).ToString() + ".csv";
 		}
@@ -155,19 +165,27 @@ namespace Light_and_Magic {
 			minutesLogged = 0;
 			isRecording = false;
 
-			int intervalInSeconds = 20;
-			int intervalInMinutes = 0;
-			int intervalInMillis = 0;
+			int intervalInSeconds = 0;
+			int intervalInMinutes = 10;
+			int intervalInMillis;
 
 			if (intervalInSeconds > 0) {
 				intervalInMillis = intervalInSeconds * 1000;
-			} else {
+			} else if (intervalInMinutes > 0) {
 				intervalInMillis = intervalInMinutes * 60000;
+			} else {
+				intervalInMillis = 60000;
 			}
 
 			display.Init();
 			InitTouch();
-			wifi.Init("WIFI17", "rilasaci");
+
+			/* Wifi has to be in a timer, otherwise it complains
+			 * about blocking the thread. Why is it not in the module thread?
+			 */
+			GT.Timer wifiSetup = new GT.Timer(1000, GT.Timer.BehaviorType.RunOnce);
+			wifiSetup.Tick += new GT.Timer.TickEventHandler(setupWifi);
+			wifiSetup.Start();
 
 			GT.Timer timer = new GT.Timer(intervalInMillis);
 			timer.Tick += new GT.Timer.TickEventHandler(timerTick);
