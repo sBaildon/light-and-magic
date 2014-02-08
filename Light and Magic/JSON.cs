@@ -14,6 +14,7 @@ namespace Light_and_Magic {
 				Hashtable dataset = new Hashtable();
 				dataset.Add("id", entry.Key.ToString());
 				dataset.Add("current_value", entry.Value.ToString());
+
 				datastreams.Add(dataset);
 			}
 
