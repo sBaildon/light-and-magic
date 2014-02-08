@@ -17,16 +17,14 @@ using GHI.Premium.Net;
 
 namespace Light_and_Magic {
 	class WiFi {
-		WiFiRS9110 wifi;
+		static WiFiRS9110 wifi;
 
 		static readonly string SERVER = "http://api.xively.com/v2/feeds/34780663";
 		static readonly string API_KEY = "wSmQSHQrdvq9l9UKD1ICEcfHsVjKJiIuOuk77NVvHIbVJSxA";
 
-		public WiFi(WiFi_RS21 wifiInput) {
-			wifi = wifiInput.Interface;
-		}
+		static public void Init(WiFi_RS21 module, string ssid, string passphrase) {
+			wifi = module.Interface;
 
-		public void Init(string ssid, string passphrase) {
 			if (!wifi.IsOpen) {
 				wifi.Open();
 			}
@@ -53,9 +51,9 @@ namespace Light_and_Magic {
 			return wifi.IsLinkConnected;
 		}
 
-		public void SendData(Hashtable table) {
-			PUTContent content;
+		static public void SendData(Hashtable table) {
 			HttpRequest request;
+			PUTContent content;
 
 			content = PUTContent.CreateTextBasedContent(JSON.Encode(table));
 			request = HttpHelper.CreateHttpPutRequest(SERVER + ".json", content, "application/json");
@@ -64,14 +62,15 @@ namespace Light_and_Magic {
 			request.SendRequest();
 		}
 
-		private void ResponseReceived(HttpRequest sender, HttpResponse response) {
+		static private void ResponseReceived(HttpRequest sender, HttpResponse response) {
+			Display.SendMessage(response.StatusCode);
 		}
 
-		private void Interface_NetworkAddressChanged(object sender, EventArgs e) {
+		static private void Interface_NetworkAddressChanged(object sender, EventArgs e) {
 			Debug.Print("WiFi address changed to: " + wifi.NetworkInterface.IPAddress);
 		}
 
-		private void Interface_WirelessConnectivityChanged(object sender, WiFiRS9110.WirelessConnectivityEventArgs e) {
+		static private void Interface_WirelessConnectivityChanged(object sender, WiFiRS9110.WirelessConnectivityEventArgs e) {
 			Debug.Print("WiFi connectivity changed, new SSID: " + e.NetworkInformation.SSID.ToString());
 		}
 	}
