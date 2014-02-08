@@ -6,7 +6,7 @@ using Microsoft.SPOT;
 using Json.NETMF;
 
 namespace Light_and_Magic {
-	class JSON {
+	static class JSON {
 		public static string Encode(Hashtable table) {
 			ArrayList datastreams = new ArrayList();
 
