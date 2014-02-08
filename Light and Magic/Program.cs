@@ -29,17 +29,23 @@ namespace Light_and_Magic {
 		// Book keeping
 		bool isRecording;
 		long minutesLogged;
-		int pollingRatePosition;
-		int[] pollingRates = { 20000, 300000, 600000, 1200000 };
 
 		// Used for reading/writing to the SD card
 		Stream stream;
 		StreamWriter writer;
 		GT.StorageDevice storage;
 
-		//Timer
+		//Timers
 		GT.Timer pollingTimer;
+		int pollingRatePosition;
+		int[] pollingRates = { 20000, 300000, 600000, 1200000 };
+
 		GT.Timer delayTimer;
+		int delayTiming = 4000;
+
+		GT.Timer heartbeat;
+		int heartbeatRate = 30000;
+		bool tickTock = true;
 
 		// Touch screen
 		Window window;
@@ -77,6 +83,16 @@ namespace Light_and_Magic {
 			WiFi.SendData(data);
 
 			pollingTimer.Start();
+		}
+
+		private void heartbeatTick(GT.Timer timer) {
+			Hashtable data = new Hashtable();
+
+			string value = (tickTock) ? "1" : "0";
+			data.Add("heartbeat", value);
+			tickTock = !tickTock;
+
+			WiFi.SendData(data);
 		}
 
 		private void timerTick(GT.Timer timer) {
@@ -201,7 +217,12 @@ namespace Light_and_Magic {
 			pollingTimer.Tick += new GT.Timer.TickEventHandler(timerTick);
 			pollingTimer.Start();
 
-			delayTimer = new GT.Timer(4000, GT.Timer.BehaviorType.RunOnce);
+			heartbeat = new GT.Timer(heartbeatRate);
+			heartbeat.Tick += new GT.Timer.TickEventHandler(heartbeatTick);
+			heartbeatTick(heartbeat);
+			heartbeat.Start();
+
+			delayTimer = new GT.Timer(delayTiming, GT.Timer.BehaviorType.RunOnce);
 			delayTimer.Tick += new GT.Timer.TickEventHandler(delayTick);
 
 		}
