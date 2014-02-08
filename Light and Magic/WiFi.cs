@@ -19,10 +19,11 @@ namespace Light_and_Magic {
 	class WiFi {
 		static WiFiRS9110 wifi;
 
-		static readonly string SERVER = "http://api.xively.com/v2/feeds/34780663";
-		static readonly string API_KEY = "wSmQSHQrdvq9l9UKD1ICEcfHsVjKJiIuOuk77NVvHIbVJSxA";
+		const string SERVER = "http://api.xively.com/v2/feeds/34780663";
+		const string API_KEY = "wSmQSHQrdvq9l9UKD1ICEcfHsVjKJiIuOuk77NVvHIbVJSxA";
 
 		static public void Init(WiFi_RS21 module, string ssid, string passphrase) {
+
 			wifi = module.Interface;
 
 			if (!wifi.IsOpen) {
@@ -45,10 +46,7 @@ namespace Light_and_Magic {
 					break;
 				}
 			}
-		}
 
-		public Boolean IsConnected() {
-			return wifi.IsLinkConnected;
 		}
 
 		static public void SendData(Hashtable table) {
@@ -72,6 +70,13 @@ namespace Light_and_Magic {
 
 		static private void Interface_WirelessConnectivityChanged(object sender, WiFiRS9110.WirelessConnectivityEventArgs e) {
 			Debug.Print("WiFi connectivity changed, new SSID: " + e.NetworkInformation.SSID.ToString());
+			Hashtable data = new Hashtable();
+			data.Add("wifi-ssid", e.NetworkInformation.SSID.ToString());
+			SendData(data);
+		}
+
+		static private void Wifi_NetworkDown(GTM.Module.NetworkModule sender, GTM.Module.NetworkModule.NetworkState state) {
+			Debug.Print("Connection down");
 		}
 	}
 }
