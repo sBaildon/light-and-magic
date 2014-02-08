@@ -25,16 +25,21 @@ namespace Light_and_Magic {
 		// Modules
 		SDCard sdCard;
 		Display display;
-		WiFi wifi;
 
 		// Book keeping
 		bool isRecording;
 		long minutesLogged;
+		int pollingRatePosition;
+		int[] pollingRates = { 20000, 300000, 600000, 1200000 };
 
 		// Used for reading/writing to the SD card
 		Stream stream;
 		StreamWriter writer;
 		GT.StorageDevice storage;
+
+		//Timer
+		GT.Timer pollingTimer;
+		GT.Timer delayTimer;
 
 		// Touch screen
 		Window window;
@@ -50,16 +55,29 @@ namespace Light_and_Magic {
 		#region Sensors
 
 		private string GetLightIntensitiy() {
-			return lightSensor.ReadLightSensorPercentage().ToString();
+			return lightSensor.ReadLightSensorPercentage().ToString("N1");
+
+			
 		}
 
 		private string CalculateLuminance(uint red, uint green, uint blue) {
-			return (((0.2126 * red) + (0.7152 * green) + (0.0722 * blue))).ToString();
+			return ((0.2126 * red) + (0.7152 * green) + (0.0722 * blue)).ToString("N1");
 		}
         
 		#endregion
 
 		#region Timer
+
+		private void delayTick(GT.Timer timer) {
+			Debug.Print("New polling rate " + pollingRates[pollingRatePosition]);
+
+			Hashtable data = new Hashtable();
+			data.Add("polling-rate", pollingRates[pollingRatePosition].ToString());
+
+			WiFi.SendData(data);
+
+			pollingTimer.Start();
+		}
 
 		private void timerTick(GT.Timer timer) {
 			ColorSense.ColorChannels channel;
@@ -151,10 +169,16 @@ namespace Light_and_Magic {
 		}
 
 		public void TouchUp(object sender, Microsoft.SPOT.Input.TouchEventArgs e) {
-			if (isRecording) {
-				StopRecording();
-			} else {
-				StartRecording();
+			pollingRatePosition++;
+			if (pollingRatePosition >= pollingRates.Length) {
+				pollingRatePosition = 0;
+			}
+
+			pollingTimer.Stop();
+			pollingTimer.Interval = new TimeSpan(0, 0, 0, 0, pollingRates[pollingRatePosition]);
+
+			if (!delayTimer.IsRunning) {
+				delayTimer.Start();
 			}
 		}
 
@@ -167,25 +191,18 @@ namespace Light_and_Magic {
 			minutesLogged = 0;
 			isRecording = false;
 
-			int intervalInSeconds = 20;
-			int intervalInMinutes = 5;
-			int intervalInMillis;
-
-			if (intervalInSeconds > 0) {
-				intervalInMillis = intervalInSeconds * 1000;
-			} else if (intervalInMinutes > 0) {
-				intervalInMillis = intervalInMinutes * 60000;
-			} else {
-				intervalInMillis = 60000;
-			}
-			
 			display.Init();
+			InitTouch();
 			WiFi.Init(wifiModule, "WIFI17", "rilasaci");
 
-			GT.Timer timer = new GT.Timer(intervalInMillis);
-			timer.Tick += new GT.Timer.TickEventHandler(timerTick);
-			timer.Start(); 
+			pollingRatePosition = 0;
 
+			pollingTimer = new GT.Timer(pollingRates[pollingRatePosition]);
+			pollingTimer.Tick += new GT.Timer.TickEventHandler(timerTick);
+			pollingTimer.Start();
+
+			delayTimer = new GT.Timer(4000, GT.Timer.BehaviorType.RunOnce);
+			delayTimer.Tick += new GT.Timer.TickEventHandler(delayTick);
 
 		}
 
