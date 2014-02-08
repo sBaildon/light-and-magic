@@ -9,6 +9,8 @@ using Microsoft.SPOT.Presentation.Media;
 using Microsoft.SPOT.Touch;
 using Microsoft.SPOT.Net.NetworkInformation;
 
+using Json.NETMF;
+
 using Gadgeteer.Networking;
 using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
@@ -81,9 +83,14 @@ namespace Light_and_Magic {
 				    "Green: " + green.ToString() + "\n" +
 				    "Blue:  " + blue.ToString() + "\n");
 
-			if (wifi.IsConnected()) {
-				wifi.SendData(red.ToString(), green.ToString(), blue.ToString(), light, luminance);
-			}
+			Hashtable dataToSend = new Hashtable();
+			dataToSend.Add("Red", red.ToString());
+			dataToSend.Add("Green", green.ToString());
+			dataToSend.Add("Blue", blue.ToString());
+			dataToSend.Add("Intensity", light);
+			dataToSend.Add("Luminosity", luminance);
+
+			wifi.SendData(dataToSend);
 
 			if (isRecording) {
 				minutesLogged = minutesLogged + 10;
@@ -165,8 +172,8 @@ namespace Light_and_Magic {
 			minutesLogged = 0;
 			isRecording = false;
 
-			int intervalInSeconds = 0;
-			int intervalInMinutes = 10;
+			int intervalInSeconds = 20;
+			int intervalInMinutes = 5;
 			int intervalInMillis;
 
 			if (intervalInSeconds > 0) {
@@ -176,20 +183,16 @@ namespace Light_and_Magic {
 			} else {
 				intervalInMillis = 60000;
 			}
-
+			
 			display.Init();
 			InitTouch();
-
-			/* Wifi has to be in a timer, otherwise it complains
-			 * about blocking the thread. Why is it not in the module thread?
-			 */
-			GT.Timer wifiSetup = new GT.Timer(1000, GT.Timer.BehaviorType.RunOnce);
-			wifiSetup.Tick += new GT.Timer.TickEventHandler(setupWifi);
-			wifiSetup.Start();
+			wifi.Init("WIFI17", "rilasaci");
 
 			GT.Timer timer = new GT.Timer(intervalInMillis);
 			timer.Tick += new GT.Timer.TickEventHandler(timerTick);
-			timer.Start();
+			timer.Start(); 
+
+
 		}
 
 	}

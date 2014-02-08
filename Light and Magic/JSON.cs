@@ -1,10 +1,25 @@
 using System;
+using System.Collections;
 using Microsoft.SPOT;
+using Json.NETMF;
 
 namespace Light_and_Magic {
 	class JSON {
-		public static string JSONEncode(string redval, string greenval, string blueval, string intval, string lumval) {
-			return "{\"version\":\"1.0.0\",\"datastreams\" : [ {\"id\" : \"Red\",\"current_value\" : \"" + redval + "\"},{ \"id\" : \"Green\",\"current_value\" : \"" + greenval + "\"},{\"id\" : \"Blue\",\"current_value\" : \"" + blueval + "\"},{\"id\": \"Intensity\",\"current_value\" : \"" + intval + "\"},{\"id\": \"Luminosity\",\"current_value\" : \"" + lumval + "\"}]}";
+		public static string Encode(Hashtable table) {
+			ArrayList datasets = new ArrayList();
+
+			foreach (DictionaryEntry entry in table) {
+				Hashtable dataset = new Hashtable();
+				dataset.Add("id", entry.Key.ToString());
+				dataset.Add("current_value", entry.Value.ToString());
+				datasets.Add(dataset);
+;			}
+
+			Hashtable json = new Hashtable();
+			json.Add("version", "1.0.0");
+			json.Add("datastreams", datasets);
+
+			return JsonSerializer.SerializeObject(json);
 		}
 	}
 }

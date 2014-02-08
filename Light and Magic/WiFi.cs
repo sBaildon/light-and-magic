@@ -53,11 +53,11 @@ namespace Light_and_Magic {
 			return wifi.IsLinkConnected;
 		}
 
-		public void SendData(string redval, string greenval, string blueval, string intval, string lumval) {
-			HttpRequest request;
+		public void SendData(Hashtable table) {
 			PUTContent content;
+			HttpRequest request;
 
-			content = PUTContent.CreateTextBasedContent(JSON.JSONEncode(redval, greenval, blueval, intval, lumval));
+			content = PUTContent.CreateTextBasedContent(JSON.Encode(table));
 			request = HttpHelper.CreateHttpPutRequest(SERVER + ".json", content, "application/json");
 			request.AddHeaderField("X-ApiKey", API_KEY);
 			request.ResponseReceived += new HttpRequest.ResponseHandler(ResponseReceived);
@@ -65,7 +65,6 @@ namespace Light_and_Magic {
 		}
 
 		private void ResponseReceived(HttpRequest sender, HttpResponse response) {
-			Display.SendMessage(response.StatusCode);
 		}
 
 		private void Interface_NetworkAddressChanged(object sender, EventArgs e) {
