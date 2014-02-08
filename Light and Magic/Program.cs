@@ -41,19 +41,19 @@ namespace Light_and_Magic {
 
 		#region Lights
 
-		void setLED(bool state) {
+		private void setLED(bool state) {
 			Mainboard.SetDebugLED(state);
 		}
 
 		#endregion
 
-		#region Sensor's
+		#region Sensors
 
-		string GetLightIntensitiy() {
+		private string GetLightIntensitiy() {
 			return lightSensor.ReadLightSensorPercentage().ToString();
 		}
 
-		string CalculateLuminance(uint red, uint green, uint blue) {
+		private string CalculateLuminance(uint red, uint green, uint blue) {
 			return (((0.2126 * red) + (0.7152 * green) + (0.0722 * blue))).ToString();
 		}
         
@@ -90,7 +90,7 @@ namespace Light_and_Magic {
 			dataToSend.Add("Intensity", light);
 			dataToSend.Add("Luminosity", luminance);
 
-			wifi.SendData(dataToSend);
+			WiFi.SendData(dataToSend);
 
 			if (isRecording) {
 				minutesLogged = minutesLogged + 10;
@@ -101,10 +101,6 @@ namespace Light_and_Magic {
 						green.ToString() + "," + 
 						blue.ToString());
 			}
-		}
-
-		private void setupWifi(GT.Timer timer) {
-			wifi.Init("Ysera", "myhotspot");
 		}
 
 		#endregion           
@@ -167,7 +163,6 @@ namespace Light_and_Magic {
 		void ProgramStarted() {
 			sdCard = new SDCard(sdCardModule);
 			display = new Display(displayModule);
-			wifi = new WiFi(wifiModule);
 
 			minutesLogged = 0;
 			isRecording = false;
@@ -185,8 +180,7 @@ namespace Light_and_Magic {
 			}
 			
 			display.Init();
-			InitTouch();
-			wifi.Init("WIFI17", "rilasaci");
+			WiFi.Init(wifiModule, "WIFI17", "rilasaci");
 
 			GT.Timer timer = new GT.Timer(intervalInMillis);
 			timer.Tick += new GT.Timer.TickEventHandler(timerTick);
