@@ -60,14 +60,12 @@ namespace Light_and_Magic {
 
 		#region Sensors
 
-		private string GetLightIntensitiy() {
-			return lightSensor.ReadLightSensorPercentage().ToString("N1");
-
-			
+		private double GetLightIntensitiy() {
+			return System.Math.Round(lightSensor.ReadLightSensorPercentage());			
 		}
 
-		private string CalculateLuminance(uint red, uint green, uint blue) {
-			return ((0.2126 * red) + (0.7152 * green) + (0.0722 * blue)).ToString("N1");
+		private double CalculateLuminance(uint red, uint green, uint blue) {
+			return System.Math.Round(((0.2126 * red) + (0.7152 * green) + (0.0722 * blue)));
 		}
         
 		#endregion
@@ -97,13 +95,12 @@ namespace Light_and_Magic {
 
 		private void timerTick(GT.Timer timer) {
 			ColorSense.ColorChannels channel;
-			string light;
-			string luminance;
+			double light;
+			double luminance;
 			uint red, green, blue;
 
 			light = GetLightIntensitiy();
-			Debug.Print("Mins:  " + minutesLogged);
-			Debug.Print("Light: " + light);
+			Debug.Print("Light: " + light.ToString());
 
 			channel = colorSense.ReadColorChannels();
 			red = channel.Red;
@@ -111,18 +108,18 @@ namespace Light_and_Magic {
 			blue = channel.Blue;
 			luminance = CalculateLuminance(red, green, blue);
 
-			Debug.Print("Luma:  " + luminance);
+			Debug.Print("Luma:  " + luminance.ToString());
 
 			Debug.Print("Red:   " + red.ToString() + "\n" +
 				    "Green: " + green.ToString() + "\n" +
 				    "Blue:  " + blue.ToString() + "\n");
 
 			Hashtable dataToSend = new Hashtable();
-			dataToSend.Add("Red", red.ToString());
-			dataToSend.Add("Green", green.ToString());
-			dataToSend.Add("Blue", blue.ToString());
+			dataToSend.Add("Red", red);
+			dataToSend.Add("Green", green);
+			dataToSend.Add("Blue", blue);
 			dataToSend.Add("Intensity", light);
-			dataToSend.Add("Luminosity", luminance);
+			dataToSend.Add("Luminosity", luminance); 
 
 			WiFi.SendData(dataToSend);
 
@@ -224,6 +221,8 @@ namespace Light_and_Magic {
 
 			delayTimer = new GT.Timer(delayTiming, GT.Timer.BehaviorType.RunOnce);
 			delayTimer.Tick += new GT.Timer.TickEventHandler(delayTick);
+
+			StartRecording();
 
 		}
 
