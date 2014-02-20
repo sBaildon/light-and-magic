@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections;
 using System.Threading;
 using Microsoft.SPOT;
+using Microsoft.SPOT.Hardware;
 using Microsoft.SPOT.Presentation;
 using Microsoft.SPOT.Presentation.Controls;
 using Microsoft.SPOT.Presentation.Media;
@@ -90,7 +91,7 @@ namespace Light_and_Magic {
 			data.Add("heartbeat", value);
 			tickTock = !tickTock;
 
-			WiFi.SendData(data);
+			WiFi.SendData(data);		
 		}
 
 		private void timerTick(GT.Timer timer) {
@@ -100,7 +101,6 @@ namespace Light_and_Magic {
 			uint red, green, blue;
 
 			light = GetLightIntensitiy();
-			Debug.Print("Light: " + light.ToString());
 
 			channel = colorSense.ReadColorChannels();
 			red = channel.Red;
@@ -108,19 +108,12 @@ namespace Light_and_Magic {
 			blue = channel.Blue;
 			luminance = CalculateLuminance(red, green, blue);
 
-			Debug.Print("Luma:  " + luminance.ToString());
-
-			Debug.Print("Red:   " + red.ToString() + "\n" +
-				    "Green: " + green.ToString() + "\n" +
-				    "Blue:  " + blue.ToString() + "\n");
-
 			Hashtable dataToSend = new Hashtable();
 			dataToSend.Add("Red", red);
 			dataToSend.Add("Green", green);
 			dataToSend.Add("Blue", blue);
 			dataToSend.Add("Intensity", light);
-			dataToSend.Add("Luminosity", luminance); 
-
+			dataToSend.Add("Luminosity", luminance);
 			WiFi.SendData(dataToSend);
 
 			if (isRecording) {
@@ -162,6 +155,7 @@ namespace Light_and_Magic {
 				isRecording = false;
 				minutesLogged = 0;
 				setLED(false);
+
 				Display.SendMessage("Not recording");
 				Debug.Print("Stopped recording\n");
 			}
@@ -191,8 +185,7 @@ namespace Light_and_Magic {
 		}
 
 		private string GetFileName() {
-			Random rand = new Random();
-			return "day" + rand.Next(200).ToString() + ".csv";
+			return DateTime.Now.ToString("d") + ".csv";
 		}
 
 		#endregion
@@ -220,6 +213,20 @@ namespace Light_and_Magic {
 
 		#endregion
 
+		#region DateTime
+
+		private void SendDateTimeRequest() {
+			WiFi.GetDateTime();
+		}
+
+		public static void UpdateDateTime(string response) {
+			DateTime datetime = DateTimeExtensions.FromIso8601(response);
+
+			Utility.SetLocalTime(datetime);
+		}
+
+		#endregion
+
 		private void Setup() {
 			Hashtable config = ReadConfig();
 
@@ -236,6 +243,8 @@ namespace Light_and_Magic {
 					WiFi.UpdateServerInformation(xivelyDetails["endpoint"].ToString(), xivelyDetails["api_key"].ToString());
 				}
 			}
+
+			SendDateTimeRequest();
 		}
 
 		void ProgramStarted() {
@@ -245,10 +254,10 @@ namespace Light_and_Magic {
 			minutesLogged = 0;
 			isRecording = false;
 
+			Setup();
+
 			display.Init();
 			InitTouch();
-
-			Setup();
 
 			pollingRatePosition = 0;
 
