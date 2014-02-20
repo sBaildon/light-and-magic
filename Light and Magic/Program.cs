@@ -168,11 +168,11 @@ namespace Light_and_Magic {
 		}
 
 		/* 
-				 * Open wifi.csv and parse out the details.
-				 * SSID and passphrase should be comma delimited,
-				 * ie: mywifissid,mywifipassword. These details will be used for 
-				 * wifi connectivity on startup.
-				 */
+		 * Open wifi.csv and parse out the details.
+		 * SSID and passphrase should be comma delimited,
+		 * ie: mywifissid,mywifipassword. These details will be used for 
+		 * wifi connectivity on startup.
+		 */
 		private Hashtable GetWifiInformation() {
 			GT.StorageDevice storage;
 			Stream stream;
@@ -182,7 +182,7 @@ namespace Light_and_Magic {
 
 			if (sdCard.verifySDCard().GetResponse()) {
 				storage = sdCardModule.GetStorageDevice();
-				stream = storage.OpenRead("wifi.csv");
+				stream = storage.OpenRead("wifi_config.csv");
 
 				byte[] data = new byte[stream.Length];
 				stream.Read(data, 0, (data.Length - 1));
@@ -196,9 +196,14 @@ namespace Light_and_Magic {
 				}
 
 				string[] values = fileContents.Split(',');
-				details.Add("ssid", values[0]);
-				details.Add("passphrase", values[1]);
-
+				if (values.Length > 0) {
+					details.Add("ssid", values[0]);
+					details.Add("passphrase", values[1]);
+				}
+				if (values.Length > 2) {
+					details.Add("server", values[2]);
+					details.Add("apiKey", values[3]);
+				}
 				return details;
 			}
 
@@ -235,6 +240,17 @@ namespace Light_and_Magic {
 
 		#endregion
 
+		private void SetupWifi() {
+			Hashtable wifiDetails = GetWifiInformation();
+			if (wifiDetails.Contains("ssid") && wifiDetails.Contains("passphrase")) {
+				WiFi.Init(wifiModule, wifiDetails["ssid"].ToString(), wifiDetails["passphrase"].ToString());
+			}
+
+			if (wifiDetails.Contains("server") && wifiDetails.Contains("apiKey")) {
+				WiFi.UpdateServerInformation(wifiDetails["server"].ToString(), wifiDetails["apiKey"].ToString());
+			}
+		}
+
 		void ProgramStarted() {
 			sdCard = new SDCard(sdCardModule);
 			display = new Display(displayModule);
@@ -244,12 +260,8 @@ namespace Light_and_Magic {
 
 			display.Init();
 			InitTouch();
-			//WiFi.Init(wifiModule, "WIFI17", "rilasaci");
 
-			Hashtable wifiDetails = GetWifiInformation();
-			if (wifiDetails != null) {
-				WiFi.Init(wifiModule, wifiDetails["ssid"].ToString(), wifiDetails["passphrase"].ToString());
-			}
+			SetupWifi();
 
 			pollingRatePosition = 0;
 

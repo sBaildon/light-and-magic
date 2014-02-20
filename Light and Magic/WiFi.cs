@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.Threading;
+
 using Microsoft.SPOT;
 using Microsoft.SPOT.Presentation;
 using Microsoft.SPOT.Presentation.Controls;
@@ -19,11 +20,13 @@ namespace Light_and_Magic {
 	class WiFi {
 		static WiFiRS9110 wifi;
 
-		const string SERVER = "http://api.xively.com/v2/feeds/34780663";
-		const string API_KEY = "wSmQSHQrdvq9l9UKD1ICEcfHsVjKJiIuOuk77NVvHIbVJSxA";
+		static string ssid;
+		static string passphrase;
+
+		static string SERVER;
+		static string API_KEY;
 
 		static public void Init(WiFi_RS21 module, string ssid, string passphrase) {
-
 			wifi = module.Interface;
 
 			if (!wifi.IsOpen) {
@@ -38,16 +41,22 @@ namespace Light_and_Magic {
 			wifi.NetworkAddressChanged +=
 				new NetworkInterfaceExtension.NetworkAddressChangedEventHandler(Interface_NetworkAddressChanged);
 
+			Connect(ssid, passphrase);
+
+		}
+
+		static private bool Connect(string ssid, string passphrase) {
 			WiFiNetworkInfo[] ScanResults = wifi.Scan();
 			foreach (WiFiNetworkInfo info in ScanResults) {
 				Debug.Print("Found WLAN: " + info.SSID);
 				if (info.SSID.ToString().Equals(ssid)) {
 					wifi.Join(info, passphrase);
-					break;
+					return true;
 				}
 			}
-
+			return false;
 		}
+		
 
 		static public void SendData(Hashtable table) {
 			HttpRequest request;
@@ -77,6 +86,13 @@ namespace Light_and_Magic {
 
 		static private void Wifi_NetworkDown(GTM.Module.NetworkModule sender, GTM.Module.NetworkModule.NetworkState state) {
 			Debug.Print("Connection down");
+			Connect(ssid, passphrase);
 		}
+
+		static public void UpdateServerInformation(string server, string apiKey) {
+			SERVER = server;
+			API_KEY = apiKey;			
+		}
+
 	}
 }
