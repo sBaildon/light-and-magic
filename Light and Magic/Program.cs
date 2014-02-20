@@ -167,47 +167,27 @@ namespace Light_and_Magic {
 			}
 		}
 
-		/* 
-		 * Open wifi.csv and parse out the details.
-		 * SSID and passphrase should be comma delimited,
-		 * ie: mywifissid,mywifipassword. These details will be used for 
-		 * wifi connectivity on startup.
-		 */
-		private Hashtable GetWifiInformation() {
-			GT.StorageDevice storage;
+		private Hashtable ReadConfig() {
 			Stream stream;
+			GT.StorageDevice storage;
 
-			Hashtable details;
-			details = new Hashtable();
+			Hashtable config;
+			config = new Hashtable();
 
 			if (sdCard.verifySDCard().GetResponse()) {
 				storage = sdCardModule.GetStorageDevice();
-				stream = storage.OpenRead("wifi_config.csv");
+				stream = storage.OpenRead("config.json");
 
 				byte[] data = new byte[stream.Length];
-				stream.Read(data, 0, (data.Length - 1));
+				stream.Read(data, 0, (data.Length));
 				stream.Close();
 
 				string fileContents = new string(System.Text.Encoding.UTF8.GetChars(data));
-				fileContents = fileContents.Trim();
 
-				if (fileContents.Length == 0) {
-					return null;
-				}
-
-				string[] values = fileContents.Split(',');
-				if (values.Length > 0) {
-					details.Add("ssid", values[0]);
-					details.Add("passphrase", values[1]);
-				}
-				if (values.Length > 2) {
-					details.Add("server", values[2]);
-					details.Add("apiKey", values[3]);
-				}
-				return details;
+				config = JsonSerializer.DeserializeString(fileContents) as Hashtable;
 			}
-
-			return null;
+			
+			return config;
 		}
 
 		private string GetFileName() {
@@ -240,14 +220,21 @@ namespace Light_and_Magic {
 
 		#endregion
 
-		private void SetupWifi() {
-			Hashtable wifiDetails = GetWifiInformation();
-			if (wifiDetails.Contains("ssid") && wifiDetails.Contains("passphrase")) {
-				WiFi.Init(wifiModule, wifiDetails["ssid"].ToString(), wifiDetails["passphrase"].ToString());
+		private void Setup() {
+			Hashtable config = ReadConfig();
+
+			if (config.Contains("wifi")) {
+				Hashtable wifiDetails = config["wifi"] as Hashtable;
+				if (wifiDetails.Contains("ssid") && wifiDetails.Contains("passphrase")) {
+					WiFi.Init(wifiModule, wifiDetails["ssid"].ToString(), wifiDetails["passphrase"].ToString());
+				}
 			}
 
-			if (wifiDetails.Contains("server") && wifiDetails.Contains("apiKey")) {
-				WiFi.UpdateServerInformation(wifiDetails["server"].ToString(), wifiDetails["apiKey"].ToString());
+			if (config.Contains("xively")) {
+				Hashtable xivelyDetails = config["xively"] as Hashtable;
+				if (xivelyDetails.Contains("endpoint") && xivelyDetails.Contains("api_key")) {
+					WiFi.UpdateServerInformation(xivelyDetails["endpoint"].ToString(), xivelyDetails["api_key"].ToString());
+				}
 			}
 		}
 
@@ -261,7 +248,7 @@ namespace Light_and_Magic {
 			display.Init();
 			InitTouch();
 
-			SetupWifi();
+			Setup();
 
 			pollingRatePosition = 0;
 
