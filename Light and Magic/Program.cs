@@ -35,7 +35,7 @@ namespace Light_and_Magic {
 		StreamWriter writer;
 		GT.StorageDevice storage;
 
-		//Timers
+		//Timers 
 		GT.Timer pollingTimer;
 		int pollingRatePosition;
 		int[] pollingRates = { 20000, 300000, 600000, 1200000 };
@@ -167,6 +167,44 @@ namespace Light_and_Magic {
 			}
 		}
 
+		/* 
+				 * Open wifi.csv and parse out the details.
+				 * SSID and passphrase should be comma delimited,
+				 * ie: mywifissid,mywifipassword. These details will be used for 
+				 * wifi connectivity on startup.
+				 */
+		private Hashtable GetWifiInformation() {
+			GT.StorageDevice storage;
+			Stream stream;
+
+			Hashtable details;
+			details = new Hashtable();
+
+			if (sdCard.verifySDCard().GetResponse()) {
+				storage = sdCardModule.GetStorageDevice();
+				stream = storage.OpenRead("wifi.csv");
+
+				byte[] data = new byte[stream.Length];
+				stream.Read(data, 0, (data.Length - 1));
+				stream.Close();
+
+				string fileContents = new string(System.Text.Encoding.UTF8.GetChars(data));
+				fileContents = fileContents.Trim();
+
+				if (fileContents.Length == 0) {
+					return null;
+				}
+
+				string[] values = fileContents.Split(',');
+				details.Add("ssid", values[0]);
+				details.Add("passphrase", values[1]);
+
+				return details;
+			}
+
+			return null;
+		}
+
 		private string GetFileName() {
 			Random rand = new Random();
 			return "day" + rand.Next(200).ToString() + ".csv";
@@ -206,7 +244,12 @@ namespace Light_and_Magic {
 
 			display.Init();
 			InitTouch();
-			WiFi.Init(wifiModule, "WIFI17", "rilasaci");
+			//WiFi.Init(wifiModule, "WIFI17", "rilasaci");
+
+			Hashtable wifiDetails = GetWifiInformation();
+			if (wifiDetails != null) {
+				WiFi.Init(wifiModule, wifiDetails["ssid"].ToString(), wifiDetails["passphrase"].ToString());
+			}
 
 			pollingRatePosition = 0;
 
@@ -221,8 +264,6 @@ namespace Light_and_Magic {
 
 			delayTimer = new GT.Timer(delayTiming, GT.Timer.BehaviorType.RunOnce);
 			delayTimer.Tick += new GT.Timer.TickEventHandler(delayTick);
-
-			StartRecording();
 
 		}
 
