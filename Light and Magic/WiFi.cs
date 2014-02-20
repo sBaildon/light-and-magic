@@ -23,7 +23,7 @@ namespace Light_and_Magic {
 		static string ssid;
 		static string passphrase;
 
-		static string SERVER;
+		static string ENDPOINT;
 		static string API_KEY;
 
 		static public void Init(WiFi_RS21 module, string ssid, string passphrase) {
@@ -63,7 +63,7 @@ namespace Light_and_Magic {
 			PUTContent content;
 
 			content = PUTContent.CreateTextBasedContent(JSON.Encode(table));
-			request = HttpHelper.CreateHttpPutRequest(SERVER + ".json", content, "application/json");
+			request = HttpHelper.CreateHttpPutRequest(ENDPOINT + ".json", content, "application/json");
 			request.AddHeaderField("X-ApiKey", API_KEY);
 			request.ResponseReceived += new HttpRequest.ResponseHandler(ResponseReceived);
 			request.SendRequest();
@@ -86,11 +86,10 @@ namespace Light_and_Magic {
 
 		static private void Wifi_NetworkDown(GTM.Module.NetworkModule sender, GTM.Module.NetworkModule.NetworkState state) {
 			Debug.Print("Connection down");
-			Connect(ssid, passphrase);
 		}
 
 		static public void UpdateServerInformation(string server, string apiKey) {
-			SERVER = server;
+			ENDPOINT = server;
 			API_KEY = apiKey;			
 		}
 
