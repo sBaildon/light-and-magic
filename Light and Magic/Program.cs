@@ -15,7 +15,7 @@ using Json.NETMF;
 using Gadgeteer.Networking;
 using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
-using Gadgeteer.Modules.GHIElectronics;
+using GHIE = Gadgeteer.Modules.GHIElectronics;
 using GHINet = GHI.Premium.Net;
 using GHI.Premium.Net;
 
@@ -54,15 +54,6 @@ namespace Light_and_Magic {
 
 		private void setMainboardLED(bool state) {
 			Mainboard.SetDebugLED(state);
-		}
-
-		private void setButtonLED(bool state) {
-			Debug.Print(button.GetType().ToString());
-			if (state) {
-				button.TurnLEDOn();
-			} else {
-				button.TurnLEDOff();
-			}
 		}
 
 		#endregion
@@ -116,7 +107,7 @@ namespace Light_and_Magic {
 
 		private void timerTick(GT.Timer timer) {
 			Debug.Print("tick");
-			ColorSense.ColorChannels channel;
+			GHIE.ColorSense.ColorChannels channel;
 			double light;
 			double luminance;
 			uint red, green, blue;
