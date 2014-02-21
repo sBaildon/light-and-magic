@@ -1,0 +1,10 @@
+{
+	"wifi": {
+		"ssid": "your_wifi_ssid",
+		"passphrase": "sha1_passphrase"
+	},
+	"xively": {
+		"endpoint": "xively_endpoint",
+		"api_key": "api_key_with_write_permissions"
+	}
+}
