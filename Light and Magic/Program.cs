@@ -29,7 +29,6 @@ namespace Light_and_Magic {
 
 		// Book keeping
 		bool isRecording;
-		long minutesLogged;
 
 		// Used for reading/writing to the SD card
 		Stream stream;
@@ -95,6 +94,7 @@ namespace Light_and_Magic {
 		}
 
 		private void timerTick(GT.Timer timer) {
+			Debug.Print("tick");
 			ColorSense.ColorChannels channel;
 			double light;
 			double luminance;
@@ -117,8 +117,7 @@ namespace Light_and_Magic {
 			WiFi.SendData(dataToSend);
 
 			if (isRecording) {
-				minutesLogged = minutesLogged + 10;
-				writer.WriteLine(minutesLogged.ToString() + "," + 
+				writer.WriteLine(DateTime.Now.ToString("u") + "," + 
 						light + "," + 
 						luminance + "," +
 						red.ToString() + "," + 
@@ -134,9 +133,9 @@ namespace Light_and_Magic {
 		private void StartRecording() {
 			if (sdCard.verifySDCard().GetResponse()) {
 				storage = sdCardModule.GetStorageDevice();
-				stream = storage.Open(GetFileName(), FileMode.Create, FileAccess.Write);
+				stream = storage.Open(GetFileName(), FileMode.OpenOrCreate, FileAccess.Write);
 				writer = new StreamWriter(stream);
-				writer.WriteLine("Min, Percent, Luma, Red, Green, Blue");
+				writer.WriteLine("Time, Percent, Luma, Red, Green, Blue");
 				isRecording = true;
 				setLED(true);
 				Display.SendMessage("Recording");
@@ -153,7 +152,6 @@ namespace Light_and_Magic {
 				sdCardModule.UnmountSDCard();
 				storage = null;
 				isRecording = false;
-				minutesLogged = 0;
 				setLED(false);
 
 				Display.SendMessage("Not recording");
@@ -185,7 +183,11 @@ namespace Light_and_Magic {
 		}
 
 		private string GetFileName() {
-			return DateTime.Now.ToString("d") + ".csv";
+			string fileName;
+
+			fileName = DateTime.Now.ToString("yyyy-MM-dd");
+
+			return fileName + ".csv";
 		}
 
 		#endregion
@@ -209,6 +211,12 @@ namespace Light_and_Magic {
 			if (!delayTimer.IsRunning) {
 				delayTimer.Start();
 			}
+
+			if (!isRecording) {
+				StartRecording();
+			} else {
+				StopRecording();
+			}
 		}
 
 		#endregion
@@ -227,7 +235,8 @@ namespace Light_and_Magic {
 
 		#endregion
 
-		private void Setup() {
+		private void SetupFromConfig() {
+
 			Hashtable config = ReadConfig();
 
 			if (config.Contains("wifi")) {
@@ -251,10 +260,9 @@ namespace Light_and_Magic {
 			sdCard = new SDCard(sdCardModule);
 			display = new Display(displayModule);
 
-			minutesLogged = 0;
 			isRecording = false;
 
-			Setup();
+			SetupFromConfig();
 
 			display.Init();
 			InitTouch();
@@ -272,7 +280,6 @@ namespace Light_and_Magic {
 
 			delayTimer = new GT.Timer(delayTiming, GT.Timer.BehaviorType.RunOnce);
 			delayTimer.Tick += new GT.Timer.TickEventHandler(delayTick);
-
 		}
 
 	}
