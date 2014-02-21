@@ -52,8 +52,17 @@ namespace Light_and_Magic {
 
 		#region Lights
 
-		private void setLED(bool state) {
+		private void setMainboardLED(bool state) {
 			Mainboard.SetDebugLED(state);
+		}
+
+		private void setButtonLED(bool state) {
+			Debug.Print(button.GetType().ToString());
+			if (state) {
+				button.TurnLEDOn();
+			} else {
+				button.TurnLEDOff();
+			}
 		}
 
 		#endregion
@@ -68,6 +77,18 @@ namespace Light_and_Magic {
 			return System.Math.Round(((0.2126 * red) + (0.7152 * green) + (0.0722 * blue)));
 		}
         
+		#endregion
+
+		#region button
+
+		public void buttonPressed(GHIE.Button sender, GHIE.Button.ButtonState state) {
+			if (isRecording) {
+				StopRecording();
+			} else {
+				StartRecording();
+			}
+		}
+
 		#endregion
 
 		#region Timer
@@ -137,7 +158,7 @@ namespace Light_and_Magic {
 				writer = new StreamWriter(stream);
 				writer.WriteLine("Time, Percent, Luma, Red, Green, Blue");
 				isRecording = true;
-				setLED(true);
+				setMainboardLED(true);
 				Display.SendMessage("Recording");
 				Debug.Print("Recording\n");
 			} else {
@@ -152,7 +173,7 @@ namespace Light_and_Magic {
 				sdCardModule.UnmountSDCard();
 				storage = null;
 				isRecording = false;
-				setLED(false);
+				setMainboardLED(false);
 
 				Display.SendMessage("Not recording");
 				Debug.Print("Stopped recording\n");
@@ -210,12 +231,6 @@ namespace Light_and_Magic {
 
 			if (!delayTimer.IsRunning) {
 				delayTimer.Start();
-			}
-
-			if (!isRecording) {
-				StartRecording();
-			} else {
-				StopRecording();
 			}
 		}
 
@@ -280,6 +295,9 @@ namespace Light_and_Magic {
 
 			delayTimer = new GT.Timer(delayTiming, GT.Timer.BehaviorType.RunOnce);
 			delayTimer.Tick += new GT.Timer.TickEventHandler(delayTick);
+
+			button = new GTM.GHIElectronics.Button(8);
+			button.ButtonPressed += new GTM.GHIElectronics.Button.ButtonEventHandler(buttonPressed);
 		}
 
 	}
