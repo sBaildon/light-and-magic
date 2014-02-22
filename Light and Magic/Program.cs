@@ -56,6 +56,14 @@ namespace Light_and_Magic {
 			Mainboard.SetDebugLED(state);
 		}
 
+		private void setButtonLED(bool state) {
+			if (state) {
+				button.TurnLEDOn();
+			} else {
+				button.TurnLEDOff();
+			}
+		}
+
 		#endregion
 
 		#region Sensors
@@ -70,13 +78,15 @@ namespace Light_and_Magic {
         
 		#endregion
 
-		#region button
+		#region Button
 
 		public void buttonPressed(GHIE.Button sender, GHIE.Button.ButtonState state) {
 			if (isRecording) {
 				StopRecording();
+				setButtonLED(false);
 			} else {
 				StartRecording();
+				setButtonLED(true);
 			}
 		}
 
@@ -287,7 +297,6 @@ namespace Light_and_Magic {
 			delayTimer = new GT.Timer(delayTiming, GT.Timer.BehaviorType.RunOnce);
 			delayTimer.Tick += new GT.Timer.TickEventHandler(delayTick);
 
-			button = new GTM.GHIElectronics.Button(8);
 			button.ButtonPressed += new GTM.GHIElectronics.Button.ButtonEventHandler(buttonPressed);
 		}
 
