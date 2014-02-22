@@ -154,12 +154,13 @@ namespace Light_and_Magic {
 
 		private void StartRecording() {
 			if (sdCard.verifySDCard().GetResponse()) {
-				storage = sdCardModule.GetStorageDevice();
-				stream = storage.Open(GetFileName(), FileMode.OpenOrCreate, FileAccess.Write);
+				stream = storage.Open("Records.csv", FileMode.OpenOrCreate, FileAccess.Write);
 				writer = new StreamWriter(stream);
 				writer.WriteLine("Time, Percent, Luma, Red, Green, Blue");
+
 				isRecording = true;
 				setMainboardLED(true);
+
 				Display.SendMessage("Recording");
 				Debug.Print("Recording\n");
 			} else {
@@ -204,12 +205,12 @@ namespace Light_and_Magic {
 			return config;
 		}
 
-		private string GetFileName() {
-			string fileName;
+		private string GetSessionTime() {
+			string date;
 
-			fileName = DateTime.Now.ToString("yyyy-MM-dd");
+			date = DateTime.Now.ToString("yyyy-MM-dd");
 
-			return fileName + ".csv";
+			return date;
 		}
 
 		#endregion
