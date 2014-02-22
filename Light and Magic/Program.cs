@@ -228,22 +228,6 @@ namespace Light_and_Magic {
 			return config;
 		}
 
-		private string GetSessionDate() {
-			string date;
-
-			date = DateTime.Now.ToString("yyyy-MM-dd");
-
-			return date;
-		}
-
-		private string GetSessionTime() {
-			string time;
-
-			time = DateTime.Now.ToString("HH-mm-ss");
-
-			return time;
-		}
-
 		#endregion
 
 		#region Touch
@@ -279,6 +263,26 @@ namespace Light_and_Magic {
 			DateTime datetime = DateTimeExtensions.FromIso8601(response);
 
 			Utility.SetLocalTime(datetime);
+		}
+
+		#endregion
+
+		#region Helpers
+
+		private string GetSessionDate() {
+			string date;
+
+			date = DateTime.Now.ToString("yyyy-MM-dd");
+
+			return date;
+		}
+
+		private string GetSessionTime() {
+			string time;
+
+			time = DateTime.Now.ToString("HH-mm-ss");
+
+			return time;
 		}
 
 		#endregion
