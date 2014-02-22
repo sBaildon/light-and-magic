@@ -329,14 +329,12 @@ namespace Light_and_Magic {
 
 		private void InitialiseTimers() {
 			pollingRatePosition = 0;
-
 			pollingTimer = new GT.Timer(pollingRates[pollingRatePosition]);
 			pollingTimer.Tick += new GT.Timer.TickEventHandler(timerTick);
 			pollingTimer.Start();
 
 			heartbeat = new GT.Timer(heartbeatRate);
 			heartbeat.Tick += new GT.Timer.TickEventHandler(heartbeatTick);
-			heartbeatTick(heartbeat);
 			heartbeat.Start();
 
 			delayTimer = new GT.Timer(delayTiming, GT.Timer.BehaviorType.RunOnce);
