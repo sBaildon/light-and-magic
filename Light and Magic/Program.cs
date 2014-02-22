@@ -153,7 +153,7 @@ namespace Light_and_Magic {
 		#region Program
 
 		private void StartRecording() {
-			if (sdCard.VerifySDCard().GetResponse()) {
+			if (sdCard.VerifySDCard()) {
 				string sessionDate;
 				sessionDate = GetSessionDate();
 
@@ -193,7 +193,7 @@ namespace Light_and_Magic {
 		}
 
 		private void StopRecording() {
-			if (sdCard.VerifySDCard().GetResponse()) {
+			if (sdCard.VerifySDCard()) {
 				writer.Close();
 				stream.Close();
 				sdCardModule.UnmountSDCard();
@@ -210,7 +210,7 @@ namespace Light_and_Magic {
 			Stream stream;
 			GT.StorageDevice storage;
 
-			if (sdCard.VerifySDCard().GetResponse()) {
+			if (sdCard.VerifySDCard()) {
 				storage = sdCardModule.GetStorageDevice();
 				stream = storage.OpenRead("config.json");
 

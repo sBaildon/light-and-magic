@@ -22,20 +22,19 @@ namespace Light_and_Magic {
 			sdCard = card;
 		}
 
-		public MessageReponse VerifySDCard() {
+		public bool VerifySDCard() {
 			if (sdCard.IsCardInserted && sdCard.IsCardMounted) {
-				return new MessageReponse(true, "SD card verified");
+				return true;
 			}
 			if (sdCard.IsCardInserted && !sdCard.IsCardMounted) {
-				Debug.Print("SD card inserted, not mounted\nMounting...");
 				try {
 					sdCard.MountSDCard();
-					return new MessageReponse(true, "Mounted");
+					return true;
 				} catch {
-					return new MessageReponse(false, "Failed to mount");
+					return false;
 				}
 			}
-			return new MessageReponse(false, "SD card not found");
+			return false;
 		}
 
 		public GT.StorageDevice GetStorage() {
