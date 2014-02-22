@@ -115,7 +115,7 @@ namespace Light_and_Magic {
 			WiFi.SendData(data);
 		}
 
-		private void timerTick(GT.Timer timer) {
+		private void pollingTick(GT.Timer timer) {
 			Debug.Print("tick");
 			GHIE.ColorSense.ColorChannels channel;
 			double light;
@@ -315,7 +315,7 @@ namespace Light_and_Magic {
 		private void InitialiseTimers() {
 			pollingRatePosition = 0;
 			pollingTimer = new GT.Timer(pollingRates[pollingRatePosition]);
-			pollingTimer.Tick += new GT.Timer.TickEventHandler(timerTick);
+			pollingTimer.Tick += new GT.Timer.TickEventHandler(pollingTick);
 			pollingTimer.Start();
 
 			heartbeat = new GT.Timer(heartbeatRate);
@@ -334,16 +334,17 @@ namespace Light_and_Magic {
 
 		void ProgramStarted() {
 			InitialiseModules();
-			InitialiseTimers();
-
-			isRecording = false;
 
 			SetupFromConfig();
+
+			isRecording = false;
 
 			display.Init();
 			InitTouch();
 
 			button.ButtonPressed += new GTM.GHIElectronics.Button.ButtonEventHandler(buttonPressed);
+
+			InitialiseTimers();
 		}
 
 	}
