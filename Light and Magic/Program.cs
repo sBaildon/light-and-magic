@@ -69,13 +69,13 @@ namespace Light_and_Magic {
 		#region Sensors
 
 		private double GetLightIntensitiy() {
-			return System.Math.Round(lightSensor.ReadLightSensorPercentage());			
+			return System.Math.Round(lightSensor.ReadLightSensorPercentage());
 		}
 
 		private double CalculateLuminance(uint red, uint green, uint blue) {
 			return System.Math.Round(((0.2126 * red) + (0.7152 * green) + (0.0722 * blue)));
 		}
-        
+
 		#endregion
 
 		#region Button
@@ -112,7 +112,7 @@ namespace Light_and_Magic {
 			data.Add("heartbeat", value);
 			tickTock = !tickTock;
 
-			WiFi.SendData(data);		
+			WiFi.SendData(data);
 		}
 
 		private void timerTick(GT.Timer timer) {
@@ -139,21 +139,28 @@ namespace Light_and_Magic {
 			WiFi.SendData(dataToSend);
 
 			if (isRecording) {
-				writer.WriteLine(DateTime.Now.ToString("u") + "," + 
-						light + "," + 
+				writer.WriteLine(DateTime.Now.ToString("u") + "," +
+						light + "," +
 						luminance + "," +
-						red.ToString() + "," + 
-						green.ToString() + "," + 
+						red.ToString() + "," +
+						green.ToString() + "," +
 						blue.ToString());
 			}
+
+			camera.TakePicture();
 		}
 
-		#endregion           
+		void picCapped(GHIE.Camera sender, GT.Picture picture) {
+			byte[] bytes = new byte[picture.MakeBitmap().Width * picture.MakeBitmap().Height * 3];
+			sdCard.SavePicture(GetSessionDate(), bytes);
+		}
+
+		#endregion
 
 		#region Program
 
 		private void StartRecording() {
-			if (sdCard.verifySDCard().GetResponse()) {
+			if (sdCard.VerifySDCard().GetResponse()) {
 				string session;
 				session = GetSessionDate();
 
@@ -162,7 +169,7 @@ namespace Light_and_Magic {
 				string[] dirs = storage.ListRootDirectorySubdirectories();
 				bool found = false;
 
-				foreach(string dir in dirs) {
+				foreach (string dir in dirs) {
 					if (dir.Equals(session)) {
 						found = true;
 						break;
@@ -205,7 +212,7 @@ namespace Light_and_Magic {
 		}
 
 		private void StopRecording() {
-			if (sdCard.verifySDCard().GetResponse()) {
+			if (sdCard.VerifySDCard().GetResponse()) {
 				writer.Close();
 				stream.Close();
 				sdCardModule.UnmountSDCard();
@@ -222,10 +229,7 @@ namespace Light_and_Magic {
 			Stream stream;
 			GT.StorageDevice storage;
 
-			Hashtable config;
-			config = new Hashtable();
-
-			if (sdCard.verifySDCard().GetResponse()) {
+			if (sdCard.VerifySDCard().GetResponse()) {
 				storage = sdCardModule.GetStorageDevice();
 				stream = storage.OpenRead("config.json");
 
@@ -235,9 +239,11 @@ namespace Light_and_Magic {
 
 				string fileContents = new string(System.Text.Encoding.UTF8.GetChars(data));
 
-				config = JsonSerializer.DeserializeString(fileContents) as Hashtable;
+				return JsonSerializer.DeserializeString(fileContents) as Hashtable;
 			}
-			
+			Hashtable config = new Hashtable();
+			config.Add("empty", "empty");
+
 			return config;
 		}
 
@@ -300,6 +306,10 @@ namespace Light_and_Magic {
 
 			Hashtable config = ReadConfig();
 
+			if (config.Contains("empty")) {
+				return;
+			}
+
 			if (config.Contains("wifi")) {
 				Hashtable wifiDetails = config["wifi"] as Hashtable;
 				if (wifiDetails.Contains("ssid") && wifiDetails.Contains("passphrase")) {
@@ -317,17 +327,7 @@ namespace Light_and_Magic {
 			SendDateTimeRequest();
 		}
 
-		void ProgramStarted() {
-			sdCard = new SDCard(sdCardModule);
-			display = new Display(displayModule);
-
-			isRecording = false;
-
-			SetupFromConfig();
-
-			display.Init();
-			InitTouch();
-
+		private void InitialiseTimers() {
 			pollingRatePosition = 0;
 
 			pollingTimer = new GT.Timer(pollingRates[pollingRatePosition]);
@@ -341,6 +341,21 @@ namespace Light_and_Magic {
 
 			delayTimer = new GT.Timer(delayTiming, GT.Timer.BehaviorType.RunOnce);
 			delayTimer.Tick += new GT.Timer.TickEventHandler(delayTick);
+		}
+
+		void ProgramStarted() {
+			sdCard = new SDCard(sdCardModule);
+			display = new Display(displayModule);
+			camera.PictureCaptured += new GHIE.Camera.PictureCapturedEventHandler(picCapped);
+
+			isRecording = false;
+
+			SetupFromConfig();
+
+			display.Init();
+			InitTouch();
+
+			InitialiseTimers();
 
 			button.ButtonPressed += new GTM.GHIElectronics.Button.ButtonEventHandler(buttonPressed);
 		}
