@@ -38,7 +38,7 @@ namespace Light_and_Magic {
 		//Timers 
 		GT.Timer pollingTimer;
 		int pollingRatePosition;
-		int[] pollingRates = { 20000, 300000, 600000, 1200000 };
+		int[] pollingRates = { 5000, 20000, 300000, 600000, 1200000 };
 
 		GT.Timer delayTimer;
 		int delayTiming = 4000;
@@ -154,9 +154,45 @@ namespace Light_and_Magic {
 
 		private void StartRecording() {
 			if (sdCard.verifySDCard().GetResponse()) {
-				stream = storage.Open("Records.csv", FileMode.OpenOrCreate, FileAccess.Write);
-				writer = new StreamWriter(stream);
-				writer.WriteLine("Time, Percent, Luma, Red, Green, Blue");
+				string session;
+				session = GetSessionDate();
+
+				storage = sdCardModule.GetStorageDevice();
+
+				string[] dirs = storage.ListRootDirectorySubdirectories();
+				bool found = false;
+
+				foreach(string dir in dirs) {
+					if (dir.Equals(session)) {
+						found = true;
+						break;
+					}
+				}
+
+				if (!found) {
+					storage.CreateDirectory(session);
+				}
+
+				string[] files = storage.ListFiles(session + "\\");
+				found = false;
+
+				foreach (string file in files) {
+					Debug.Print(file);
+					if (file.Equals(session + "\\" + "Records.csv")) {
+						Debug.Print("found");
+						found = true;
+						break;
+					}
+				}
+
+				if (!found) {
+					stream = storage.Open(session + "\\" + "Records.csv", FileMode.Create, FileAccess.ReadWrite);
+					writer = new StreamWriter(stream);
+					writer.WriteLine("Time, Percent, Luma, Red, Green, Blue");
+				} else {
+					stream = storage.Open(session + "\\" + "Records.csv", FileMode.Append, FileAccess.Write);
+					writer = new StreamWriter(stream);
+				}
 
 				isRecording = true;
 				setMainboardLED(true);
@@ -205,12 +241,20 @@ namespace Light_and_Magic {
 			return config;
 		}
 
-		private string GetSessionTime() {
+		private string GetSessionDate() {
 			string date;
 
 			date = DateTime.Now.ToString("yyyy-MM-dd");
 
 			return date;
+		}
+
+		private string GetSessionTime() {
+			string time;
+
+			time = DateTime.Now.ToString("HH-mm-ss");
+
+			return time;
 		}
 
 		#endregion
