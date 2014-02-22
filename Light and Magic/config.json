@@ -6,5 +6,8 @@
 	"xively": {
 		"endpoint": "xively_endpoint",
 		"api_key": "api_key_with_write_permissions"
+	},
+	"image_capture": {
+		"enable_capture": "yes"
 	}
 }
