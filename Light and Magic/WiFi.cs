@@ -62,7 +62,7 @@ namespace Light_and_Magic {
 		
 
 		static public void SendData(Hashtable table) {
-			if (!wifi.IsLinkConnected) {
+			if (wifi == null || !wifi.IsLinkConnected) {
 				return;
 			}
 
