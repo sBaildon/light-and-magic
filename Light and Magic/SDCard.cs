@@ -22,7 +22,7 @@ namespace Light_and_Magic {
 			sdCard = card;
 		}
 
-		public MessageReponse verifySDCard() {
+		public MessageReponse VerifySDCard() {
 			if (sdCard.IsCardInserted && sdCard.IsCardMounted) {
 				return new MessageReponse(true, "SD card verified");
 			}
@@ -38,8 +38,25 @@ namespace Light_and_Magic {
 			return new MessageReponse(false, "SD card not found");
 		}
 
-		public GT.StorageDevice GetDevice() {
+		public GT.StorageDevice GetStorage() {
 			return sdCard.GetStorageDevice();
+		}
+
+		public bool VerifyDirectory(string path) {
+			if (!VerifySDCard().GetResponse()) {
+				return false;
+			}
+
+			string[] dirs = GetStorage().ListRootDirectorySubdirectories();
+
+			foreach (string dir in dirs) {
+				if (dir.Equals(path)) {
+					return true;
+				}
+			}
+
+			GetStorage().CreateDirectory(path);
+			return true;
 		}
 	}
 }
