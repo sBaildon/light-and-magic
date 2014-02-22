@@ -36,6 +36,8 @@ namespace Light_and_Magic {
 			wifi.NetworkInterface.EnableDhcp();
 			NetworkInterfaceExtension.AssignNetworkingStackTo(wifi);
 
+			module.NetworkDown += 
+				new GTM.Module.NetworkModule.NetworkEventHandler(Wifi_NetworkDown);
 			wifi.WirelessConnectivityChanged +=
 				new WiFiRS9110.WirelessConnectivityChangedEventHandler(Interface_WirelessConnectivityChanged);
 			wifi.NetworkAddressChanged +=
@@ -51,6 +53,7 @@ namespace Light_and_Magic {
 				Debug.Print("Found WLAN: " + info.SSID);
 				if (info.SSID.ToString().Equals(ssid)) {
 					wifi.Join(info, passphrase);
+
 					return true;
 				}
 			}
@@ -69,8 +72,20 @@ namespace Light_and_Magic {
 			request.SendRequest();
 		}
 
+		static public void GetDateTime() {
+			HttpRequest request;
+
+			request = HttpHelper.CreateHttpGetRequest("http://www.timeapi.org/utc/now");
+			request.ResponseReceived += new HttpRequest.ResponseHandler(DateResponse);
+			request.SendRequest();
+		}
+
 		static private void ResponseReceived(HttpRequest sender, HttpResponse response) {
 			Display.SendMessage(response.StatusCode);
+		}
+
+		static private void DateResponse(HttpRequest sender, HttpResponse response) {
+			Program.UpdateDateTime(response.Text.ToString());			
 		}
 
 		static private void Interface_NetworkAddressChanged(object sender, EventArgs e) {
