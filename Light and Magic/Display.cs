@@ -24,9 +24,10 @@ namespace Light_and_Magic {
 
 		public Display(Display_TE35 displayInput) {
 			display = displayInput;
+			Init();
 		}
 
-		public void Init() {
+		private void Init() {
 			canvas = new Canvas();
 			window = display.WPFWindow;
 			window.Child = canvas;

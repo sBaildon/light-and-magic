@@ -331,7 +331,6 @@ namespace Light_and_Magic {
 			display = new Display(displayModule);
 		}
 
-
 		void ProgramStarted() {
 			InitialiseModules();
 
