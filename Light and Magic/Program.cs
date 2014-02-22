@@ -146,13 +146,6 @@ namespace Light_and_Magic {
 						green.ToString() + "," +
 						blue.ToString());
 			}
-
-			camera.TakePicture();
-		}
-
-		void picCapped(GHIE.Camera sender, GT.Picture picture) {
-			byte[] bytes = new byte[picture.MakeBitmap().Width * picture.MakeBitmap().Height * 3];
-			sdCard.SavePicture(GetSessionDate(), bytes);
 		}
 
 		#endregion
@@ -161,31 +154,19 @@ namespace Light_and_Magic {
 
 		private void StartRecording() {
 			if (sdCard.VerifySDCard().GetResponse()) {
-				string session;
-				session = GetSessionDate();
+				string sessionDate;
+				sessionDate = GetSessionDate();
 
 				storage = sdCardModule.GetStorageDevice();
 
-				string[] dirs = storage.ListRootDirectorySubdirectories();
+				sdCard.VerifyDirectory(sessionDate);
+
+				string[] files = storage.ListFiles(sessionDate + "\\");
 				bool found = false;
-
-				foreach (string dir in dirs) {
-					if (dir.Equals(session)) {
-						found = true;
-						break;
-					}
-				}
-
-				if (!found) {
-					storage.CreateDirectory(session);
-				}
-
-				string[] files = storage.ListFiles(session + "\\");
-				found = false;
 
 				foreach (string file in files) {
 					Debug.Print(file);
-					if (file.Equals(session + "\\" + "Records.csv")) {
+					if (file.Equals(sessionDate + "\\" + "Records.csv")) {
 						Debug.Print("found");
 						found = true;
 						break;
@@ -193,11 +174,11 @@ namespace Light_and_Magic {
 				}
 
 				if (!found) {
-					stream = storage.Open(session + "\\" + "Records.csv", FileMode.Create, FileAccess.ReadWrite);
+					stream = storage.Open(sessionDate + "\\" + "Records.csv", FileMode.Create, FileAccess.ReadWrite);
 					writer = new StreamWriter(stream);
 					writer.WriteLine("Time, Percent, Luma, Red, Green, Blue");
 				} else {
-					stream = storage.Open(session + "\\" + "Records.csv", FileMode.Append, FileAccess.Write);
+					stream = storage.Open(sessionDate + "\\" + "Records.csv", FileMode.Append, FileAccess.Write);
 					writer = new StreamWriter(stream);
 				}
 
