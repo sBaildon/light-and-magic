@@ -43,10 +43,6 @@ namespace Light_and_Magic {
 		}
 
 		public bool VerifyDirectory(string path) {
-			if (!VerifySDCard().GetResponse()) {
-				return false;
-			}
-
 			string[] dirs = GetStorage().ListRootDirectorySubdirectories();
 
 			foreach (string dir in dirs) {
