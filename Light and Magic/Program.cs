@@ -50,7 +50,7 @@ namespace Light_and_Magic {
 		// Touch screen
 		Window window;
 
-		#region Lights
+		#region LEDs
 
 		private void setMainboardLED(bool state) {
 			Mainboard.SetDebugLED(state);
