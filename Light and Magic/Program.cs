@@ -326,10 +326,15 @@ namespace Light_and_Magic {
 			delayTimer.Tick += new GT.Timer.TickEventHandler(delayTick);
 		}
 
-		void ProgramStarted() {
+		private void InitialiseModules() {
 			sdCard = new SDCard(sdCardModule);
 			display = new Display(displayModule);
-			camera.PictureCaptured += new GHIE.Camera.PictureCapturedEventHandler(picCapped);
+		}
+
+
+		void ProgramStarted() {
+			InitialiseModules();
+			InitialiseTimers();
 
 			isRecording = false;
 
@@ -337,8 +342,6 @@ namespace Light_and_Magic {
 
 			display.Init();
 			InitTouch();
-
-			InitialiseTimers();
 
 			button.ButtonPressed += new GTM.GHIElectronics.Button.ButtonEventHandler(buttonPressed);
 		}
