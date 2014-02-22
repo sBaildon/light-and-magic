@@ -38,7 +38,7 @@ namespace Light_and_Magic {
 		//Timers 
 		GT.Timer pollingTimer;
 		int pollingRatePosition;
-		int[] pollingRates = { 5000, 20000, 300000, 600000, 1200000 };
+		int[] pollingRates = { 10000, 20000, 300000, 600000, 1200000 };
 
 		GT.Timer delayTimer;
 		int delayTiming = 4000;
@@ -83,10 +83,8 @@ namespace Light_and_Magic {
 		public void buttonPressed(GHIE.Button sender, GHIE.Button.ButtonState state) {
 			if (isRecording) {
 				StopRecording();
-				setButtonLED(false);
 			} else {
 				StartRecording();
-				setButtonLED(true);
 			}
 		}
 
@@ -142,9 +140,11 @@ namespace Light_and_Magic {
 				writer.WriteLine(DateTime.Now.ToString("u") + "," +
 						light + "," +
 						luminance + "," +
-						red.ToString() + "," +
-						green.ToString() + "," +
-						blue.ToString());
+						red + "," +
+						green + "," +
+						blue);
+
+				camera.TakePicture();
 			}
 		}
 
@@ -183,7 +183,7 @@ namespace Light_and_Magic {
 				}
 
 				isRecording = true;
-				setMainboardLED(true);
+				setButtonLED(true);
 
 				Display.SendMessage("Recording");
 				Debug.Print("Recording\n");
@@ -199,7 +199,7 @@ namespace Light_and_Magic {
 				sdCardModule.UnmountSDCard();
 				storage = null;
 				isRecording = false;
-				setMainboardLED(false);
+				setButtonLED(false);
 
 				Display.SendMessage("Not recording");
 				Debug.Print("Stopped recording\n");
@@ -222,6 +222,7 @@ namespace Light_and_Magic {
 
 				return JsonSerializer.DeserializeString(fileContents) as Hashtable;
 			}
+
 			Hashtable config = new Hashtable();
 			config.Add("empty", "empty");
 
@@ -331,6 +332,11 @@ namespace Light_and_Magic {
 			display = new Display(displayModule);
 		}
 
+		private void PictureCaptured(GHIE.Camera camera, GT.Picture picture) {
+			Debug.Print("picture captured");
+			sdCard.SavePicture(GetSessionTime(), picture.PictureData);
+		}
+
 		void ProgramStarted() {
 			InitialiseModules();
 
@@ -338,10 +344,10 @@ namespace Light_and_Magic {
 
 			isRecording = false;
 
-			display.Init();
 			InitTouch();
 
-			button.ButtonPressed += new GTM.GHIElectronics.Button.ButtonEventHandler(buttonPressed);
+			button.ButtonPressed += new GHIE.Button.ButtonEventHandler(buttonPressed);
+			camera.PictureCaptured += new GHIE.Camera.PictureCapturedEventHandler(PictureCaptured);
 
 			InitialiseTimers();
 		}
