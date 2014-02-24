@@ -26,6 +26,7 @@ namespace Light_and_Magic {
 		// Modules
 		SDCard sdCard;
 		Display display;
+		WiFi wifi;
 
 		// Book keeping
 		bool isRecording;
@@ -95,7 +96,7 @@ namespace Light_and_Magic {
 			Hashtable data = new Hashtable();
 			data.Add("polling-rate", pollingRates[pollingRatePosition].ToString());
 
-			WiFi.SendData(data);
+			wifi.SendData(data);
 
 			pollingTimer.Start();
 		}
@@ -107,7 +108,7 @@ namespace Light_and_Magic {
 			data.Add("heartbeat", value);
 			tickTock = !tickTock;
 
-			WiFi.SendData(data);
+			wifi.SendData(data);
 		}
 
 		private void pollingTick(GT.Timer timer) {
@@ -131,7 +132,7 @@ namespace Light_and_Magic {
 			dataToSend.Add("Blue", blue);
 			dataToSend.Add("Intensity", light);
 			dataToSend.Add("Luminosity", luminance);
-			WiFi.SendData(dataToSend);
+			wifi.SendData(dataToSend);
 
 			if (isRecording) {
 				sdCard.WriteLineToFile(sessionDate, "Records.csv", DateTime.Now.ToString("u") + "," +
@@ -140,6 +141,10 @@ namespace Light_and_Magic {
 						red.ToString() + "," +
 						green.ToString() + "," +
 						blue.ToString());
+
+				if (enableImageCapture) {
+					camera.TakePicture();
+				}
 			}
 		}
 
@@ -219,10 +224,6 @@ namespace Light_and_Magic {
 
 		#region DateTime
 
-		private void SendDateTimeRequest() {
-			WiFi.GetDateTime();
-		}
-
 		public static void UpdateDateTime(string response) {
 			Debug.Print("Got time: " + response);
 			DateTime datetime = DateTimeExtensions.FromIso8601(response);
@@ -259,21 +260,21 @@ namespace Light_and_Magic {
 			if (config.Contains("wifi")) {
 				Hashtable wifiDetails = config["wifi"] as Hashtable;
 				if (wifiDetails.Contains("ssid") && wifiDetails.Contains("passphrase")) {
-					WiFi.Init(wifiModule, wifiDetails["ssid"].ToString(), wifiDetails["passphrase"].ToString());
+					wifi.Connect(wifiDetails["ssid"].ToString(), wifiDetails["passphrase"].ToString());
 				}
 			}
 
 			if (config.Contains("xively")) {
 				Hashtable xivelyDetails = config["xively"] as Hashtable;
 				if (xivelyDetails.Contains("endpoint") && xivelyDetails.Contains("api_key")) {
-					WiFi.UpdateServerInformation(xivelyDetails["endpoint"].ToString(), xivelyDetails["api_key"].ToString());
+					wifi.UpdateServerInformation(xivelyDetails["endpoint"].ToString(), xivelyDetails["api_key"].ToString());
 				}
 			}
 
 			if (config.Contains("image_capture")) {
 				Hashtable pictureDetails = config["image_capture"] as Hashtable;
 				if (pictureDetails.Contains("enable_capture")) {
-					enableImageCapture = (pictureDetails["enable_capture"].ToString().Equals("yes"));
+					enableImageCapture = pictureDetails["enable_capture"].ToString().Equals("yes");
 				}
 			}
 		}
@@ -294,7 +295,13 @@ namespace Light_and_Magic {
 
 		private void InitialiseModules() {
 			sdCard = new SDCard(sdCardModule);
+			wifi = new WiFi(wifiModule);
 			display = new Display(displayModule);
+		}
+
+		private void PictureCaptured(GHIE.Camera camera, GT.Picture picture) {
+			Debug.Print("picture captured");
+			sdCard.SavePicture(sessionDate + "\\" + sessionDate + " " + GetSessionTime() + ".bmp", picture);
 		}
 
 		void ProgramStarted() {
@@ -307,6 +314,7 @@ namespace Light_and_Magic {
 			InitTouch();
 
 			button.ButtonPressed += new GHIE.Button.ButtonEventHandler(buttonPressed);
+			camera.PictureCaptured += new GHIE.Camera.PictureCapturedEventHandler(PictureCaptured);
 
 			InitialiseTimers();
 		}

@@ -118,6 +118,19 @@ namespace Light_and_Magic {
 			stream.Close();
 		}
 
+		public void SavePicture(string path, GT.Picture picture) {
+			GT.StorageDevice storage;
+
+			storage = GetStorage();
+			try {
+				storage.WriteFile(path, picture.PictureData);
+				Debug.Print("saved successfully");
+			} catch {
+				Debug.Print("failed to save");
+			}
+			
+		}
+
 
 	}
 }
