@@ -29,16 +29,13 @@ namespace Light_and_Magic {
 
 		// Book keeping
 		bool isRecording;
-
-		// Used for reading/writing to the SD card
-		Stream stream;
-		StreamWriter writer;
-		GT.StorageDevice storage;
+		bool enableImageCapture;
+		String sessionDate;
 
 		//Timers 
 		GT.Timer pollingTimer;
 		int pollingRatePosition;
-		int[] pollingRates = { 10000, 20000, 300000, 600000, 1200000 };
+		int[] pollingRates = { 20000, 300000, 600000, 1200000 };
 
 		GT.Timer delayTimer;
 		int delayTiming = 4000;
@@ -137,14 +134,12 @@ namespace Light_and_Magic {
 			WiFi.SendData(dataToSend);
 
 			if (isRecording) {
-				writer.WriteLine(DateTime.Now.ToString("u") + "," +
+				sdCard.WriteLineToFile(sessionDate, "Records.csv", DateTime.Now.ToString("u") + "," +
 						light + "," +
 						luminance + "," +
-						red + "," +
-						green + "," +
-						blue);
-
-				camera.TakePicture();
+						red.ToString() + "," +
+						green.ToString() + "," +
+						blue.ToString());
 			}
 		}
 
@@ -154,32 +149,15 @@ namespace Light_and_Magic {
 
 		private void StartRecording() {
 			if (sdCard.VerifySDCard()) {
-				string sessionDate;
 				sessionDate = GetSessionDate();
 
-				storage = sdCardModule.GetStorageDevice();
-
-				sdCard.VerifyDirectory(sessionDate);
-
-				string[] files = storage.ListFiles(sessionDate + "\\");
-				bool found = false;
-
-				foreach (string file in files) {
-					Debug.Print(file);
-					if (file.Equals(sessionDate + "\\" + "Records.csv")) {
-						Debug.Print("found");
-						found = true;
-						break;
-					}
+				if (!sdCard.VerifyDirectory(sessionDate)) {
+					sdCard.CreateDirectory(sessionDate);
 				}
 
-				if (!found) {
-					stream = storage.Open(sessionDate + "\\" + "Records.csv", FileMode.Create, FileAccess.ReadWrite);
-					writer = new StreamWriter(stream);
-					writer.WriteLine("Time, Percent, Luma, Red, Green, Blue");
-				} else {
-					stream = storage.Open(sessionDate + "\\" + "Records.csv", FileMode.Append, FileAccess.Write);
-					writer = new StreamWriter(stream);
+				if (!sdCard.VerifyFile(sessionDate, "Records.csv")) {
+					sdCard.CreateFile(sessionDate, "Records.csv");
+					sdCard.WriteLineToFile(sessionDate, "Records.csv", "Time, Percent, Luminance, Red, Green, Blue");
 				}
 
 				isRecording = true;
@@ -194,10 +172,7 @@ namespace Light_and_Magic {
 
 		private void StopRecording() {
 			if (sdCard.VerifySDCard()) {
-				writer.Close();
-				stream.Close();
-				sdCardModule.UnmountSDCard();
-				storage = null;
+				sdCard.Unmount();
 				isRecording = false;
 				setButtonLED(false);
 
@@ -207,26 +182,14 @@ namespace Light_and_Magic {
 		}
 
 		private Hashtable ReadConfig() {
-			Stream stream;
-			GT.StorageDevice storage;
-
 			if (sdCard.VerifySDCard()) {
-				storage = sdCardModule.GetStorageDevice();
-				stream = storage.OpenRead("config.json");
+				string contents;
+				contents = sdCard.ReadFile("config.json");
 
-				byte[] data = new byte[stream.Length];
-				stream.Read(data, 0, (data.Length));
-				stream.Close();
-
-				string fileContents = new string(System.Text.Encoding.UTF8.GetChars(data));
-
-				return JsonSerializer.DeserializeString(fileContents) as Hashtable;
+				return JsonSerializer.DeserializeString(contents) as Hashtable;
 			}
 
-			Hashtable config = new Hashtable();
-			config.Add("empty", "empty");
-
-			return config;
+			return new Hashtable();
 		}
 
 		#endregion
@@ -261,9 +224,10 @@ namespace Light_and_Magic {
 		}
 
 		public static void UpdateDateTime(string response) {
+			Debug.Print("Got time: " + response);
 			DateTime datetime = DateTimeExtensions.FromIso8601(response);
 
-			Utility.SetLocalTime(datetime);
+			Utility.SetLocalTime(datetime);			
 		}
 
 		#endregion
@@ -292,10 +256,6 @@ namespace Light_and_Magic {
 
 			Hashtable config = ReadConfig();
 
-			if (config.Contains("empty")) {
-				return;
-			}
-
 			if (config.Contains("wifi")) {
 				Hashtable wifiDetails = config["wifi"] as Hashtable;
 				if (wifiDetails.Contains("ssid") && wifiDetails.Contains("passphrase")) {
@@ -310,7 +270,12 @@ namespace Light_and_Magic {
 				}
 			}
 
-			SendDateTimeRequest();
+			if (config.Contains("image_capture")) {
+				Hashtable pictureDetails = config["image_capture"] as Hashtable;
+				if (pictureDetails.Contains("enable_capture")) {
+					enableImageCapture = (pictureDetails["enable_capture"].ToString().Equals("yes"));
+				}
+			}
 		}
 
 		private void InitialiseTimers() {
@@ -332,11 +297,6 @@ namespace Light_and_Magic {
 			display = new Display(displayModule);
 		}
 
-		private void PictureCaptured(GHIE.Camera camera, GT.Picture picture) {
-			Debug.Print("picture captured");
-			sdCard.SavePicture(GetSessionTime(), picture.PictureData);
-		}
-
 		void ProgramStarted() {
 			InitialiseModules();
 
@@ -347,7 +307,6 @@ namespace Light_and_Magic {
 			InitTouch();
 
 			button.ButtonPressed += new GHIE.Button.ButtonEventHandler(buttonPressed);
-			camera.PictureCaptured += new GHIE.Camera.PictureCapturedEventHandler(PictureCaptured);
 
 			InitialiseTimers();
 		}
