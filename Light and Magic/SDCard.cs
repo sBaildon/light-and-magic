@@ -41,17 +41,17 @@ namespace Light_and_Magic {
 			return sdCard.GetStorageDevice();
 		}
 
-		public bool VerifyDirectory(string path) {
-			string[] dirs = GetStorage().ListRootDirectorySubdirectories();
+		public void VerifyDirectory(string path) {
+			GT.StorageDevice storage;
+			storage = GetStorage();
+
+			string[] dirs = storage.ListRootDirectorySubdirectories();
 
 			foreach (string dir in dirs) {
-				if (dir.Equals(path)) {
-					return true;
-				}
+				if (dir.Equals(path)) return;
 			}
 
-			GetStorage().CreateDirectory(path);
-			return true;
+			storage.CreateDirectory(path);
 		}
 	}
 }
