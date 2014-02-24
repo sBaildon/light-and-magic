@@ -39,6 +39,10 @@ namespace Light_and_Magic {
 
 		public GT.StorageDevice GetStorage() {
 			return sdCard.GetStorageDevice();
+		}		
+
+		public void Unmount() {
+			sdCard.UnmountSDCard();
 		}
 
 		public void VerifyDirectory(string path) {
