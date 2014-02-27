@@ -301,7 +301,7 @@ namespace Light_and_Magic {
 
 		private void PictureCaptured(GHIE.Camera camera, GT.Picture picture) {
 			Debug.Print("picture captured");
-			sdCard.SavePicture(sessionDate + "\\" + sessionDate + " " + GetSessionTime() + ".bmp", picture);
+			sdCard.SavePicture(sessionDate + "\\" + GetSessionDate() + " " + GetSessionTime() + ".bmp", picture);
 		}
 
 		void ProgramStarted() {
