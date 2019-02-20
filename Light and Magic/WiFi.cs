@@ -20,6 +20,8 @@ namespace Light_and_Magic {
 	class WiFi {
 		WiFiRS9110 wifi;
 
+		int totalRequests = 0;
+
 		string ENDPOINT;
 		string API_KEY;
 
@@ -71,6 +73,7 @@ namespace Light_and_Magic {
 			request = HttpHelper.CreateHttpPutRequest(ENDPOINT + ".json", content, "application/json");
 			request.AddHeaderField("X-ApiKey", API_KEY);
 			Debug.Print("sending");
+			request.ResponseReceived += new HttpRequest.ResponseHandler(ResponseReceived);
 			request.SendRequest();
 			Debug.Print("sent");
 		}
@@ -84,7 +87,7 @@ namespace Light_and_Magic {
 		}
 
 		private void ResponseReceived(HttpRequest sender, HttpResponse response) {
-			Display.SendMessage(response.StatusCode);
+			Display.SendMessage((totalRequests++).ToString());
 		}
 
 		private void DateResponse(HttpRequest sender, HttpResponse response) {
@@ -93,6 +96,8 @@ namespace Light_and_Magic {
 
 		private void Interface_NetworkAddressChanged(object sender, EventArgs e) {
 			Debug.Print("WiFi address changed to: " + wifi.NetworkInterface.IPAddress);
+
+			GetDateTime();
 		}
 
 		private void Interface_WirelessConnectivityChanged(object sender, WiFiRS9110.WirelessConnectivityEventArgs e) {
@@ -101,8 +106,6 @@ namespace Light_and_Magic {
 			Hashtable data = new Hashtable();
 			data.Add("wifi-ssid", e.NetworkInformation.SSID.ToString());
 			SendData(data);
-
-			GetDateTime();
 		}
 
 		private void Wifi_NetworkDown(GTM.Module.NetworkModule sender, GTM.Module.NetworkModule.NetworkState state) {

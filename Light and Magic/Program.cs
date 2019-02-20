@@ -33,6 +33,11 @@ namespace Light_and_Magic {
 		bool enableImageCapture;
 		String sessionDate;
 
+		//Calculators
+		Calc ledCalculator;
+		Calc sunCalculator;
+		Calc incCalculator;
+
 		//Timers 
 		GT.Timer pollingTimer;
 		int pollingRatePosition;
@@ -44,6 +49,12 @@ namespace Light_and_Magic {
 		GT.Timer heartbeat;
 		int heartbeatRate = 30000;
 		bool tickTock = true;
+
+		GT.Timer displayTimeout;
+		int displayTimeoutValue = 10000;
+
+		GT.Timer startSessionRecordTimer;
+		GT.Timer stopSessionRecordTimer;
 
 		// Touch screen
 		Window window;
@@ -111,12 +122,21 @@ namespace Light_and_Magic {
 			wifi.SendData(data);
 		}
 
+		private void displayTimedOut(GT.Timer timer) {
+			if (displayModule.BBackLightOn) {
+				displayModule.SetBacklight(false);
+			} else {
+				displayModule.SetBacklight(true);
+			}
+		}
+
 		private void pollingTick(GT.Timer timer) {
 			Debug.Print("tick");
 			GHIE.ColorSense.ColorChannels channel;
 			double light;
 			double luminance;
 			uint red, green, blue;
+            string interpretedSource;
 
 			light = GetLightIntensitiy();
 
@@ -126,12 +146,15 @@ namespace Light_and_Magic {
 			blue = channel.Blue;
 			luminance = CalculateLuminance(red, green, blue);
 
+            interpretedSource = CalculateInterpretedSource(light, luminance);
+
 			Hashtable dataToSend = new Hashtable();
 			dataToSend.Add("Red", red);
 			dataToSend.Add("Green", green);
 			dataToSend.Add("Blue", blue);
 			dataToSend.Add("Intensity", light);
 			dataToSend.Add("Luminosity", luminance);
+            dataToSend.Add("interpreted_source", interpretedSource);
 			wifi.SendData(dataToSend);
 
 			if (isRecording) {
@@ -140,12 +163,22 @@ namespace Light_and_Magic {
 						luminance + "," +
 						red.ToString() + "," +
 						green.ToString() + "," +
-						blue.ToString());
+						blue.ToString() + "," + 
+                        interpretedSource);
 
 				if (enableImageCapture) {
 					camera.TakePicture();
 				}
 			}
+		}
+
+		private void startSessionTick(GT.Timer timer) {
+			StopRecording();
+			StartRecording();
+		}
+
+		private void stopSessionTick(GT.Timer timer) {
+			StopRecording();
 		}
 
 		#endregion
@@ -162,7 +195,7 @@ namespace Light_and_Magic {
 
 				if (!sdCard.VerifyFile(sessionDate, "Records.csv")) {
 					sdCard.CreateFile(sessionDate, "Records.csv");
-					sdCard.WriteLineToFile(sessionDate, "Records.csv", "Time, Percent, Luminance, Red, Green, Blue");
+					sdCard.WriteLineToFile(sessionDate, "Records.csv", "Time, Percent, Luminance, Red, Green, Blue, Estimated");
 				}
 
 				isRecording = true;
@@ -199,14 +232,82 @@ namespace Light_and_Magic {
 
 		#endregion
 
-		#region Touch
+        #region Light Source Interpretation
 
-		void InitTouch() {
+        private void CreateCalculators() {
+            CreateIncCalculator();
+            CreateLEDCalculator();
+            CreateSunCalculator();
+        }
+
+        private void CreateIncCalculator() {
+            double[] incIntensity = { 43, 61, 74, 84 };
+            double[] incLuminosity = { 41, 94, 225, 629 };
+            incCalculator = new Calc(incIntensity, incLuminosity, "Incandescent");
+        }
+
+        private void CreateSunCalculator() {
+            double[] sunIntensity = { 43, 60, 74, 84 };
+            double[] sunLuminosity = { 13, 35, 78, 218 };
+            sunCalculator = new Calc(sunIntensity, sunLuminosity, "Sun");
+        }
+
+        private void CreateLEDCalculator() {
+            double[] ledIntensity = { 44, 60, 75, 86 };
+            double[] ledLuminosity = { 6, 14, 40, 139 };
+            ledCalculator = new Calc(ledIntensity, ledLuminosity, "LED");
+        }
+
+        private string CalculateInterpretedSource(double intensity, double luminosity) {
+            int totalMatches = 0;
+            string interpretedSource = "Unknown";
+
+            if (luminosity < 10) {
+                interpretedSource = "Off";
+            }
+
+            double ledLuminosity = ledCalculator.getLuminosity((int)intensity);
+            if ((ledLuminosity * 1.3) > luminosity && luminosity > (ledLuminosity * 0.7)) {
+                interpretedSource = "LED";
+                totalMatches++;
+            }
+
+            double sunLuminosity = sunCalculator.getLuminosity((int)intensity);
+            if ((sunLuminosity * 1.3) > luminosity && luminosity > (sunLuminosity * 0.7)) {
+                interpretedSource = "Off";
+                totalMatches++;
+            }
+
+            double incLuminosity = incCalculator.getLuminosity((int)intensity);
+            if ((incLuminosity * 1.3) > luminosity && luminosity > (sunLuminosity * 0.7)) {
+                interpretedSource = "Incandescent";
+                totalMatches++;
+            }
+
+            if (totalMatches > 1) {
+                interpretedSource = "Multiple";
+            }
+
+            return interpretedSource;
+        }
+
+        #endregion
+
+        #region Touch
+
+        void InitTouch() {
 			window = display.GetWindow();
 			window.TouchUp += new Microsoft.SPOT.Input.TouchEventHandler(TouchUp);
+			displayModule.SetBacklight(false);
 		}
 
 		public void TouchUp(object sender, Microsoft.SPOT.Input.TouchEventArgs e) {
+			if (!displayModule.BBackLightOn) {
+				displayModule.SetBacklight(true);
+				displayTimeout.Start();
+				return;
+			}
+
 			pollingRatePosition++;
 			if (pollingRatePosition >= pollingRates.Length) {
 				pollingRatePosition = 0;
@@ -228,7 +329,7 @@ namespace Light_and_Magic {
 			Debug.Print("Got time: " + response);
 			DateTime datetime = DateTimeExtensions.FromIso8601(response);
 
-			Utility.SetLocalTime(datetime);			
+			Utility.SetLocalTime(datetime);
 		}
 
 		#endregion
@@ -277,6 +378,37 @@ namespace Light_and_Magic {
 					enableImageCapture = pictureDetails["enable_capture"].ToString().Equals("yes");
 				}
 			}
+
+			if (config.Contains("session")) {
+				Hashtable sessionDetails = config["session"] as Hashtable;
+				if (sessionDetails.Contains("start_date") && sessionDetails.Contains("end_date")) {
+					TimeSpan span;
+					DateTime now, startDate, stopDate;
+
+					now = DateTime.Now;
+					startDate = DateTimeExtensions.FromIso8601(sessionDetails["start_date"].ToString());
+					stopDate = DateTimeExtensions.FromIso8601(sessionDetails["end_date"].ToString());
+
+					if (stopDate > now) {
+						Display.SendMessage("Session end is after now");
+						Debug.Print("Session end is after now");
+					} else if (startDate > stopDate) {
+						Display.SendMessage("Start date is AFTER end date");
+						Debug.Print("Start date is AFTER end date");
+					} else {
+						span = startDate - now;
+						startSessionRecordTimer = new GT.Timer(span, GT.Timer.BehaviorType.RunOnce);
+						startSessionRecordTimer.Tick += new GT.Timer.TickEventHandler(startSessionTick);
+
+						span = stopDate - now;
+						stopSessionRecordTimer = new GT.Timer(span, GT.Timer.BehaviorType.RunOnce);
+						stopSessionRecordTimer.Tick += new GT.Timer.TickEventHandler(stopSessionTick);
+
+						startSessionRecordTimer.Start();
+						stopSessionRecordTimer.Start();
+					}
+				}
+			}
 		}
 
 		private void InitialiseTimers() {
@@ -291,6 +423,9 @@ namespace Light_and_Magic {
 
 			delayTimer = new GT.Timer(delayTiming, GT.Timer.BehaviorType.RunOnce);
 			delayTimer.Tick += new GT.Timer.TickEventHandler(delayTick);
+
+			displayTimeout = new GT.Timer(displayTimeoutValue, GT.Timer.BehaviorType.RunOnce);
+			displayTimeout.Tick += new GT.Timer.TickEventHandler(displayTimedOut);
 		}
 
 		private void InitialiseModules() {
@@ -305,11 +440,12 @@ namespace Light_and_Magic {
 		}
 
 		void ProgramStarted() {
+            CreateCalculators();
+            isRecording = false;
+
 			InitialiseModules();
 
 			SetupFromConfig();
-
-			isRecording = false;
 
 			InitTouch();
 
